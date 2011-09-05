@@ -1,8 +1,23 @@
 /*
- *      kernel.h
- *      
- *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
+ *      kernel.h - RhythmOS
+ *      	
+ * 	Copyright (C) 2011 Dustin Dorroh <dustindorroh@gmail.com>
+ *
+ * 	RhythmOS is free software: you can redistribute it and/or modify
+ * 	it under the terms of the GNU General Public License as published by
+ * 	the Free Software Foundation, either version 3 of the License, or
+ * 	(at your option) any later version.
+ *
+ * 	RhythmOS is distributed in the hope that it will be useful,
+ * 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * 	GNU General Public License for more details.
+ *
+ * 	You should have received a copy of the GNU General Public License
+ * 	along with RhythmOS.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
+
 #ifndef KERNEL_H
 #define KERNEL_H
 
@@ -10,12 +25,12 @@
 #include "user.h"
 #include "filesystem.h"
 #include "buddy.h"
+#include "list.h"
 #include "version.h"
 
 /*
  * Basic system data structures 
  */
-
 typedef struct {
 	char c;
 	unsigned char fg:4;
@@ -37,14 +52,11 @@ void timer_handler(regs * r);
 void keyboard_handler(regs * r, unsigned char scancode);
 void write_to_screen(const char *data, unsigned int count);
 
-/*
- * segmentation.c 
- */
+/* segmentation.c */
 void setup_segmentation(void);
 
 /*
- * interrupts.c 
- */
+ * interrupts.c */
 void fatal(const char *str);
 void setup_interrupts(void);
 void move_cursor(int x, int y);
@@ -91,7 +103,6 @@ int in_user_mode(void);
 /*
  * pipe.c 
  */
-
 typedef struct pipe_buffer {
 	unsigned int reading;
 	unsigned int writing;
@@ -166,10 +177,9 @@ filehandle *new_pipe_reader(pipe_buffer * p);
     (_obj)->prev = NULL;                   \
   }
 
-/*
+/**
  * process.c 
- */
-
+ **/
 typedef struct process {
 	pid_t pid;		/* process identifier/index into process array */
 	int exists;		/* whether or not this process slot is used */
@@ -203,6 +213,7 @@ typedef struct {
 	process *last;
 } processlist;
 
+
 pid_t next_free_pid(void);
 void init_regs(regs * r, unsigned int stack_max, void (*start_addr) (void));
 pid_t get_free_pid(void);
@@ -212,27 +223,20 @@ void suspend_process(process * proc);
 void resume_process(process * proc);
 void context_switch(regs * r);
 
-/*
- * syscall.c 
- */
-
+/** syscall.c **/
 int valid_pointer(const void *ptr, unsigned int size);
 int valid_string(const char *str);
 void syscall(regs * r);
 
-/*
- * buddy.c 
- */
-
+/** buddy.c **/
+kmalloc malloc_data
 void kmalloc_init(void);
 void *kmalloc(unsigned int nbytes);
 void kfree(void *ptr);
 
-/*
- * filedesc.c 
- */
 
+/** filedesc.c **/
 filehandle *new_screen_handle(void);
 void close_filehandle(filehandle * fh);
 
-#endif				/* KERNEL_H */
+#endif	/* KERNEL_H */

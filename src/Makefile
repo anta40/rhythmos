@@ -3,6 +3,7 @@
 #       Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
 #
 
+VPATH=../includes: ..lib
 
 # Host defs
 CC = gcc
@@ -13,113 +14,72 @@ AS = as
 # Target defs
 ARCH = $(shell arch)
 ifeq ($(ARCH),x86_64)
-HOST_CFLAGS = 
 TARGET_CC = i386-elf-gcc
 TARGET_CPP = i386-elf-cpp
 TARGET_LD = i386-elf-ld
 TARGET_AS = i386-elf-as
+HOST_CFLAGS = -Wall
 else
-HOST_CFLAGS = -m32
 TARGET_CC = gcc
 TARGET_CPP = cpp
 TARGET_LD = ld
 TARGET_AS = as
+HOST_CFLAGS = -Wall -m32
 endif
 
-PRJ_ROOT ?= ..
-KERNEL_IMG = kernel.img
-FILESYSTEM_IMG = filesystem.img
-GRUB_IMG = grub.img
-KERNEL_OBJECTS = \
-	start.o \
-	process.o \
-	page.o \
-	libc.o \
-	syscall.o \
-	calls.o \
-	buddy.o \
-	pipe.o \
-	filedesc.o \
-	filesystem.o \
-	fscalls.o \
-	unixproc.o \
-	main.o \
-	segmentation.o \
-	interrupts.o
-USER_OBJECTS = crtso.o libc.o calls.o buddy.o
+INCLUDE = -I../include
+include Makefile.inc
 
+TARGET_CFLAGS = \
+-Wall \
+-Wextra \
+-m32 \
+-fno-stack-protector \
+-nostdinc \
+-fno-builtin
 
-COREUTILS = sh ls cat find pwd echo hello dsh kill
-COREUTILS_OBJECTS = $(addsuffix .o, $(COREUTILS))
+%.d: %.c
+	@set -e; rm -f $@; \
+	$(CC) $(INCLUDE) -MM $(CPPFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
 
-TESTS = mptest daemon
-TESTS_OBJECTS = $(addsuffix .o, $(TESTS))
+# If target isn't 'clean' include C_DEPS
+ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(C_DEPS)),)
+-include $(C_DEPS)
+endif
+endif
 
-TEST_UTILS = fstool testbuddy
-TEST_UTILS_OBJECTS = $(addsufix .o, $(TEST_UTILS))
+VPATH=../scripts:.
 
-PROGRAMS =
-PROGRAMS_OBJECTS = $(addsufix .o, $(PROGRAMS))
+all: default
+objects: $(COREUTILS_OBJECTS)
 
-FILE_SYSTEM_BASE = $(PRJ_ROOT)/rootfs
-FILE_SYSTEM_BIN = $(FILE_SYSTEM_BASE)/bin
+default: $(COREUTILS_OBJECTS) $(COREUTILS)
 
-all: default fs boot
-
-default: \
-	fstool \
-	testbuddy \
-	$(COREUTILS) \
-	$(TESTS) \
-	$(KERNEL_IMG)\
-
-grub: |boot
-
-boot: default fs
-	./mk_boot_image.sh
-
-fs: default
-	./mkfstree.sh
-	cp $(COREUTILS) $(TESTS) $(FILE_SYSTEM_BIN)
-	./mk_filesystem_image.sh
-
-fstool: fstool.c filesystem.c filesystem.h
-	$(CC) $(HOST_CFLAGS) -DUSE_UNIXPROC -DUSERLAND -Wall -o fstool fstool.c filesystem.c
-
-testbuddy: testbuddy.c buddy.c buddy.h
-	$(CC) $(HOST_CFLAGS) -DUSERLAND -Wall -o testbuddy testbuddy.c buddy.c
-
-%.o: %.c *.h
-	$(TARGET_CC) -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin -c $<
+%.o: %.c $(C_OBJS)
+	$(TARGET_CC) $(INCLUDE) $(TARGET_CFLAGS) -c $< 
 
 %.o: %.s
 	$(TARGET_CPP) $< | $(TARGET_AS) -o $*.o
 
 
-# Link using `link.ld'
-$(KERNEL_IMG): $(KERNEL_OBJECTS)
-	$(TARGET_LD) -T link.ld -o $(KERNEL_IMG) $(KERNEL_OBJECTS)
-
 # Link using `link-user.ld'
-$(COREUTILS): %: %.o $(USER_OBJECTS)
+$(C_PROGS): %: %.o $(USER_OBJECTS)
 	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+
+$(USER_OBJECTS): %: %.o $(USER_OBJECTS)
+	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o	
 
 $(TESTS): %: %.o $(USER_OBJECTS)
-	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+        $(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
-# Misc targets
-.PHONY : run run-qemu install clean
-run: |run-qemu
 
-run-qemu: boot
-	qemu -daemonize -fda $(GRUB_IMG)
 
-install:
-
+.PHONY: clean clean-all
 clean:
-	-rm --force $(KERNEL_IMG) $(KERNEL_OBJECTS) $(FILESYSTEM_IMG) \
-	$(USER_OBJECTS) \
-	$(COREUTILS) $(COREUTILS_OBJECTS) \
-	$(TESTS) $(TESTS_OBJECTS) \
-	$(TEST_UTILS) $(TEST_UTILS_OBJECTS) \
-	$(PROGRAMS) $(PROGRAMS_OBJECTS)
+	-rm --force $(C_PROGS) $(C_OBJS) 
+
+clean-all:
+	-rm --force $(C_PROGS) $(C_OBJS) $(C_DEPS)
