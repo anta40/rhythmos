@@ -5,21 +5,22 @@
  */
 
 #include "kernel.h"
+#include <dirent.h>
 
 char *error_names[15] = {
 	"Success",
 	"",
 	"Bad file descriptor",			/* EBADF */
-	"Invalid argument",				/* EINVAL */
-	"No such process",				/* ESRCH */
+	"Invalid argument",			/* EINVAL */
+	"No such process",			/* ESRCH */
 	"Operation not permitted",		/* EPERM */
-	"No such file or directory",	/* ENOENT */
+	"No such file or directory",		/* ENOENT */
 	"Too many open files",			/* EMFILE */
-	"Is a directory",				/* EISDIR */
-	"Not a directory",				/* ENOTDIR */
+	"Is a directory",			/* EISDIR */
+	"Not a directory",			/* ENOTDIR */
 	"Function not implemented",		/* ENOSYS */
-	"Not enough space",				/* ENOMEM */
-	"Bad address",					/* EFAULT */
+	"Not enough space",			/* ENOMEM */
+	"Bad address",				/* EFAULT */
 	"Resource unavailable, try again",	/* EAGAIN */
 	"No child processes"			/* ECHILD */
 };
@@ -95,21 +96,18 @@ int atoi(const char *s)
         unsigned val=0;         /* value we're accumulating */
         int neg=0;              /* set to true if we see a minus sign */
 
-        /* skip whitespace */
-        while (*s==' ' || *s=='\t') {
-                s++;
-        }
+      
+        while (*s==' ' || *s=='\t') {s++;}  /* skip whitespace */
 
         /* check for sign */
         if (*s=='-') {
                 neg=1;
                 s++;
-        }
-        else if (*s=='+') {
-                s++;
-        }
-
-        /* process each digit */
+        } else if (*s=='+') {
+		s++;
+	}
+	
+	/* process each digit */
         while (*s) {
                 const char *where;
                 unsigned digit;
@@ -117,15 +115,15 @@ int atoi(const char *s)
                 /* look for the digit in the list of digits */
                 where = strchr(digits, *s);
                 if (where==NULL) {
-                        /* not found; not a digit, so stop */
+		/* not found; not a digit, so stop */
                         break;
                 }
 
-                /* get the index into the digit list, which is the value */
+                /* get the index into the digit list, 
+                 * which is the value */
                 digit = (where - digits);
 
                 /* could (should?) check for overflow here */
-
                 /* shift the number over and add in the new digit */
                 val = val*10 + digit;
 
@@ -158,7 +156,7 @@ size_t strlen(const char *s)
 strchr(const char *s, int ch)
 {
 	/* scan from left to right */
-	while (*s) { /* if we hit it, return it */
+	char *swhile (*s) { /* if we hit it, return it */
 		if (*s==ch)
 			return (char *)s;
 		s++;
@@ -294,9 +292,8 @@ char *strncat(char *dest, const char *src, size_t n)
 #define addchar(_pos,_c) { if ((_pos)+1 < size)   \
                              str[(_pos)] = (_c);  \
                            (_pos)++; }
-void
-print_num(char *str, size_t size, size_t * pos, unsigned int val,
-	  unsigned int base)
+void print_num(char *str, size_t size, size_t * pos, 
+		unsigned int val, unsigned int base)
 {
 	char *hexdigits = "0123456789abcdef";
 	unsigned int digits = 1;
@@ -309,9 +306,8 @@ print_num(char *str, size_t size, size_t * pos, unsigned int val,
 	addchar(*pos, hexdigits[val % base]);
 }
 
-void
-print_field(char *str, size_t size, size_t * pos, const char *c,
-	    va_list * apptr)
+void print_field(char *str, size_t size, size_t * pos, 
+		 const char *c, va_list * apptr
 {
 	switch (*c) {
 	case 's':
@@ -410,7 +406,11 @@ int snprintf(char *str, size_t size, const char *format, ...)
 	va_end(ap);
 	return r;
 }
-
+/*
+ * printf: unknown
+ * @format
+ * @return
+ */
 int printf(const char *format, ...)
 {
 	if (!in_user_mode())
@@ -424,8 +424,10 @@ int printf(const char *format, ...)
 	write(STDOUT_FILENO, buf, len);
 	return len;
 }
+
 /* 
- * puts - writes the string s and a trailing newline to stdout. 
+ * puts - writes the string s and a trailing newline to stdout.
+ * @param
  */
 int puts(const char *s)
 {
@@ -434,6 +436,11 @@ int puts(const char *s)
 	return len;
 }
 
+/*
+ * kprintf 
+ * @param ...
+ * @return - length
+ */
 int kprintf(const char *format, ...)
 {
 	if (in_user_mode())
@@ -448,12 +455,22 @@ int kprintf(const char *format, ...)
 	return len;
 }
 
+/*
+ * user_mode_assert days: 
+ * @param
+ * @return
+ */
 void user_mode_assert(const char *str, const char *function)
 {
 	printf("Assertion failure in %s: %s\n", function, str);
 	exit(1);
 }
 
+/*
+ * opendir 
+ * @param ...
+ * @return - length
+ */
 DIR *opendir(const char *filename)
 {
 	int fd;
@@ -464,6 +481,10 @@ DIR *opendir(const char *filename)
 	return dir;
 }
 
+/*
+ * readdir 
+ * @DIR
+ */
 struct dirent *readdir(DIR * dirp)
 {
 	if (1 != getdent(dirp->fd, &dirp->ent))
@@ -471,6 +492,12 @@ struct dirent *readdir(DIR * dirp)
 	return &dirp->ent;
 }
 
+/*
+ * closedir: closes directory stream associated with dirp. The directory 
+ * 	stream descriptor dirp is not avail‐able after this call.
+ * @DIR:
+ * @return: zero on success.
+ */
 int closedir(DIR * dirp)
 {
 	close(dirp->fd);

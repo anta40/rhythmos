@@ -1,7 +1,21 @@
-/*
- *      main.c
- *      
- *      Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
+/*    	
+ * 	main.c - RhythmOS
+ * 	
+ * 	Copyright (C) 2011 Dustin Dorroh <dustindorroh@gmail.com>
+ *
+ * 	RhythmOS is free software: you can redistribute it and/or modify
+ * 	it under the terms of the GNU General Public License as published by
+ * 	the Free Software Foundation, either version 3 of the License, or
+ * 	(at your option) any later version.
+ *
+ * 	RhythmOS is distributed in the hope that it will be useful,
+ * 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * 	GNU General Public License for more details.
+ *
+ * 	You should have received a copy of the GNU General Public License
+ * 	along with RhythmOS.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
 
 #include "kernel.h"
@@ -72,8 +86,7 @@ void write_to_screen(const char *data, unsigned int count)
 			xpos += add;
 		} else if (c == BACKSPACE && xpos) {
 		/* Handle a backspace, by moving the cursor back one space
-		 * untill the cursor is against the edge */
-			
+		 * untill the cursor is against the edge */	
 			xpos--;  /* Back the cursor up then display if */			
 			screen[ypos * SCREEN_WIDTH + xpos].c = NULL;
 			

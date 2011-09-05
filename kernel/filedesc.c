@@ -1,14 +1,29 @@
-/*
- *      filedesc.c
- *      
- *      Dustin Dorroh <ddorroh@aplopteng.com>
+/*    	
+ * 	filedesc.c - RhythmOS
+ * 	
+ * 	Codyright (C) 2011 Dustin Dorroh <dustindorroh@gmail.com>
+ *
+ * 	RhythmOS is free software: you can redistribute it and/or modify
+ * 	it under the terms of the GNU General Public License as published by
+ * 	the Free Software Foundation, either version 3 of the License, or
+ * 	(at your option) any later version.
+ *
+ * 	RhythmOS is distributed in the hope that it will be useful,
+ * 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * 	GNU General Public License for more details.
+ *
+ * 	You should have received a copy of the GNU General Public License
+ * 	along with RhythmOS.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
+
 #include "kernel.h"
 
 extern process *current_process;
 extern process processes[MAX_PROCESSES];
 
-/*
+/***
  * screen_write
  * 
  * This function is used as the write handler for file handles of type
@@ -21,7 +36,7 @@ static ssize_t screen_write(filehandle * fh, const void *buf, size_t count)
 	return count;
 }
 
-/*
+/***
  * screen_read
  * 
  * This function is used as the read handler for file handles of type FH_SCREEN.
@@ -33,7 +48,7 @@ static ssize_t screen_read(filehandle * fh, void *buf, size_t count)
 	return -EINVAL;
 }
 
-/*
+/**
  * screen_destroy
  * 
  * Frees the memory associated with a screen file handle. Called when all file
@@ -45,7 +60,7 @@ static void screen_destroy(filehandle * fh)
 	kfree(fh);
 }
 
-/*
+/**
  * new_screen_handle
  * 
  * Creates a file handle that writes to the screen. This is necessary for processes
@@ -70,7 +85,7 @@ filehandle *new_screen_handle(void)
 	return fh;
 }
 
-/*
+/**
  * close_filehandle
  * 
  * Releases a reference to a file handle, possibly destroying it. The reason why
@@ -86,7 +101,7 @@ void close_filehandle(filehandle * fh)
 		fh->destroy(fh);
 }
 
-/*
+/**
  * syscall_close
  * 
  * Close a file descriptor. Does not necessarily get rid of the associated file
@@ -104,10 +119,10 @@ int syscall_close(int fd)
 	return 0;
 }
 
-/*
+/**
  * syscall_dup2
  * 
- * "Copies" a file descriptor by making another reference to the same file handle,
+ * `Copies' a file descriptor by making another reference to the same file handle,
  * but from a different file descriptor. Because both file descriptors return to
  * the same handle, any calls to functions like read or write will maintain the
  * shared state, e.g. file position.
