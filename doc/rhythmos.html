@@ -1,0 +1,2501 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- This text is a description of the features that are present in the
+RhythmOS kernel (version 0.1, 01 September 2011).
+
+This is Edition 0.1, last updated 01 September 2011, 
+of RhythmOS Reference Manual, 
+for RhythmOS, Version 0.1.
+
+Copyright C 2011 Dustin Dorroh (dustindorroh@gmail.com)
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the section entitled
+"GNU Free Documentation License".
+
+
+ -->
+<!-- Created on September 3, 2011 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>RhythmOS Reference Manual 0.1</title>
+
+<meta name="description" content="RhythmOS Reference Manual 0.1">
+<meta name="keywords" content="RhythmOS Reference Manual 0.1">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="Top"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="RhythmOS"></a>
+<h1 class="settitle">RhythmOS</h1>
+
+<p>This manual is for <code>RhythmOS</code> (version 0.1, 01 September 2011),
+which is a an attempt at a barebones <small>UNIX</small>-like kernel
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview">1. Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    General purpose and information.
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Building-RhythmOS">2. Building RhythmOS</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                Steps to compile and build RhythmOS.
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Running-RhythmOS">3. Running RhythmOS</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 Steps to run RhythmOS
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Programming-the-kernel">4. Programming the kernel</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multitasking">5. Multitasking</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                Interrupt handling
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Memory">6. Memory</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                      Paging and virtual memory
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Dynamic-Memory-Allocation">7. Dynamic Memory Allocation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#System-calls">8. System calls</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                
+</td></tr>
+<tr><td align="left" valign="top"><a href="#I_002fO">9. I/O</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Filesystems">10. Filesystems</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                 
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Reporting-bugs">11. Reporting bugs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              Sending bug reports and feature suggestions.
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment"> &mdash; The Detailed Node Listing &mdash;
+
+Overview
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#RhythmOS-Features">1.0.1 RhythmOS Features</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Source-Code">1.0.2 Source Code</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Building RhythmOS
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Build-Internals">2.0.1 Build Internals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Build Internals
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Generate-Kernel-Image">Generate Kernel Image</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Generate-Filesystem-Image">Generate Filesystem Image</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Generate-Bootloader-Image">Generate Bootloader Image</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+Programming the kernel
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#Assembly">4.1 Assembly</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#C">4.2 C</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+C
+
+</pre></th></tr><tr><td align="left" valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+<tr><th colspan="3" align="left" valign="top"><pre class="menu-comment">
+</pre></th></tr></table>
+
+<hr size="1">
+<a name="Overview"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#RhythmOS-Features" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Overview-1"></a>
+<h1 class="chapter">1. Overview</h1>
+<a name="index-Overview"></a>
+
+<p>This manual is for <code>RhythmOS</code> (version 0.1,
+01 September 2011), which is a an attempt at a barebones <small>UNIX</small>-like
+kernel. This document intends to cover the how to build, use, and
+develop on Rhythmos as well as explain in depth some of the kernel
+internals.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#RhythmOS-Features">1.0.1 RhythmOS Features</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top"> * Source Code::
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="RhythmOS-Features"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Overview" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Source-Code" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="RhythmOS-Features-1"></a>
+<h3 class="subsection">1.0.1 RhythmOS Features</h3>
+<a name="index-RhythmOS-Features"></a>
+
+<ul>
+<li>
+Small C library
+</li><li>
+Kernel mode and mode user
+</li><li>
+Basic Multitasking through the use of context switches and
+ memory protection
+</li><li>
+Dynamic memory allocation (using buddy allocation technique)
+</li><li>
+Virtual memory
+</li><li>
+Kernel Paging
+</li><li>
+UNIX-like system calls:
+<ul class="toc">
+<li>-Process management: <code>fork</code>, <code>kill</code>, <code>execve</code>,
+<code>waitpid</code> &hellip;
+</li><li>-
+Interprocess Communication (IPC): pipe, dup
+</li></ul>
+</li><li>
+Read only filesystem
+</li></ul>
+
+<a name="index-authors"></a>
+<a name="index-Dustin_002c-Dorroh"></a>
+
+<hr size="6">
+<a name="Source-Code"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#RhythmOS-Features" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Overview" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Source-Code-1"></a>
+<h3 class="subsection">1.0.2 Source Code</h3>
+<a name="index-Source-Code"></a>
+
+<p>Use git to clone a copy of the source tree. Use the command below to
+clone the RhythmOS repository.
+</p><table><tr><td>&nbsp;</td><td><pre class="example"><code>git clone https://code.google.com/p/rhythmos/</code>
+</pre></td></tr></table>
+
+
+
+
+
+
+
+<hr size="6">
+<a name="Building-RhythmOS"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Source-Code" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Build-Internals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Overview" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Building-RhythmOS-1"></a>
+<h1 class="chapter">2. Building RhythmOS</h1>
+<a name="index-Building-RhythmOS"></a>
+
+<p>From the top level project directory execute the configure script.
+</p><table><tr><td>&nbsp;</td><td><pre class="example">$ ./configure
+</pre></td></tr></table>
+
+<p>To build everything just type <code>`make'</code>. This should build the
+kernel image &lsquo;<tt>kernel.img</tt>&rsquo;, the file system image
+&lsquo;<tt>filesystem.img</tt>&rsquo;, and the grub boot image &lsquo;<tt>grub.img</tt>&rsquo;
+</p><table><tr><td>&nbsp;</td><td><pre class="example">$ make
+</pre></td></tr></table>
+<p>To only build root file system type <code>`make fs'</code>. To only build
+the bootloader type <code>`make boot'</code>.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Build-Internals">2.0.1 Build Internals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Build-Internals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Generate-Kernel-Image" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Build-Internals-1"></a>
+<h3 class="subsection">2.0.1 Build Internals</h3>
+<a name="index-Build-Internals"></a>
+
+<p>In order for <code>RhythmOS</code> to be able to boot properly, three different
+binary images are needed (see section <a href="#Building-RhythmOS">Building RhythmOS</a>). The <em>images</em> also
+have to be made in a particular order due to the build dependencies,
+thus the build process naturally falls into a three step process:
+</p>
+<ol>
+<li>
+Generate Kernel Image (see section <a href="#Generate-Kernel-Image">Generate Kernel Image</a>)
+</li><li>
+Generate Filesystem Image (see section <a href="#Generate-Filesystem-Image">Generate Filesystem Image</a>)
+</li><li>
+Generate Bootloader Image (see section <a href="#Generate-Bootloader-Image">Generate Bootloader Image</a>)
+</li></ol>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Generate-Kernel-Image">Generate Kernel Image</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Generate-Filesystem-Image">Generate Filesystem Image</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Generate-Bootloader-Image">Generate Bootloader Image</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Generate-Kernel-Image"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Build-Internals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Generate-Filesystem-Image" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Build-Internals" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Generate-Kernel-Image-1"></a>
+<h4 class="unnumberedsubsubsec">Generate Kernel Image</h4>
+<a name="index-Generate-Kernel-Image"></a>
+
+<p>Executing <code>make</code> compiles individual source (<code>.c</code>) into
+object files (<code>.o</code>). The linker (<code>ld</code>) is then used next to
+link the object files into one binary
+&lsquo;<tt>src/kernel.img</tt>&rsquo;. See section <a href="#Assembly">Assembly</a>.
+</p>
+
+<hr size="6">
+<a name="Generate-Filesystem-Image"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Generate-Kernel-Image" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Generate-Bootloader-Image" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Build-Internals" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Generate-Filesystem-Image-1"></a>
+<h4 class="unnumberedsubsubsec">Generate Filesystem Image</h4>
+<a name="index-Generate-Filesystem-Image"></a>
+
+
+<p>The <code>make fs</code> target executes the build script
+&lsquo;<tt>mk_filesystem_image.sh</tt>&rsquo; located in &lsquo;<tt>src</tt>&rsquo;, the project&rsquo;s
+source directory.
+</p>
+<p>The srcipt &lsquo;<tt>mk_filesystem_image.sh</tt>&rsquo; creates empty directories in
+the project tree, which will be a staging place for the root files that
+will be used by RhythmOS. Next, the programs that will run on the kernel (ie
+<code>sh</code>, <code>ls</code>, <code>cat</code>, etc ... ) will be copied to
+the appropiate staging directory <a name="DOCF1" href="#FOOT1">(1)</a>. An example
+of how rootfs might be structured.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ tree rootfs/
+rootfs/
+|-- bin
+|   |-- cat
+|   |-- find
+|   |-- ls
+|   |-- pwd
+|   `-- sh
+|-- etc
+`-- usr
+</pre></td></tr></table>
+
+<p>An image, based off of the staging filesystem, is then built up in
+memory <a name="DOCF2" href="#FOOT2">(2)</a>. When complete the filesystem image will
+be located &lsquo;<tt>src/filesystem.img</tt>&rsquo;.
+</p>
+<hr size="6">
+<a name="Generate-Bootloader-Image"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Generate-Filesystem-Image" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Build-Internals" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Generate-Bootloader-Image-1"></a>
+<h4 class="unnumberedsubsubsec">Generate Bootloader Image</h4>
+<a name="index-Generate-Bootloader-Image"></a>
+
+<p>The <code>`make boot'</code> target executes the build script
+&lsquo;<tt>mk_boot_image.sh</tt>&rsquo; located in &lsquo;<tt>src</tt>&rsquo;, the project&rsquo;s source
+directory.
+</p>
+<p>In order to run the kernel, it’s necessary to use a program called a
+boot loader. This is the first thing that runs when a computer starts,
+and is responsible for loading the kernel file into memory and
+instructing the processor to start executing it. A boot loader is placed
+right at the very beginning of a disk, which is where the computer looks
+for an operating system as soon as it starts.
+</p>
+<p>The &lsquo;<tt>grub.img</tt>&rsquo; is the GRUB image that we will as are
+bootloader. First we &lsquo;<tt>mk_boot_image.sh</tt>&rsquo; makes sure to delete the
+old kernel image and filesystem image from the GRUB image.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ mdel -i grub.img ::kernel.img || true
+$ mdel -i grub.img ::filesystem.img || true
+</pre></td></tr></table>
+
+<p>Lastly &lsquo;<tt>mk_boot_image.sh</tt>&rsquo; writes the kernel image
+(&lsquo;<tt>kernel.img</tt>&rsquo;) and filesystem image (&lsquo;<tt>kernel.img</tt>&rsquo;) data to the
+GRUB image &lsquo;<tt>grub.img</tt>&rsquo;.
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="example">$ mcopy -i grub.img kernel.img :: || exit 1
+$ mcopy -i grub.img filesystem.img :: || exit 1
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Running-RhythmOS"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Generate-Bootloader-Image" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Building-RhythmOS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Running-RhythmOS-1"></a>
+<h1 class="chapter">3. Running RhythmOS</h1>
+
+<p>Once the kernel has been copied to the disk image, you can then run it
+under qemu using one of the following commands:
+</p><table><tr><td>&nbsp;</td><td><pre class="example"><code>qemu -fda src/grub.img</code>
+<code>qemu -daemonize -fda src/grub.img # daemonize qemu</code>
+<code>qemu -monitor stdio -fda src/grub.img # output qemu debug on stdio</code>
+</pre></td></tr></table>
+
+<p>This same command can also be run through the <code>make</code> target
+<code>run</code>;
+</p><table><tr><td>&nbsp;</td><td><pre class="example"><code>make run</code>
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Programming-the-kernel"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Assembly" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Running-RhythmOS" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Programming-the-kernel-1"></a>
+<h1 class="chapter">4. Programming the kernel</h1>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Assembly">4.1 Assembly</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#C">4.2 C</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                           
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Assembly"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#link_002eld-source-file" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Assembly-1"></a>
+<h2 class="section">4.1 Assembly</h2>
+
+<table><tr><td>&nbsp;</td><td><pre class="example"># Link using &lsquo;<tt>link.ld</tt>&rsquo;
+$(KERNEL_IMG): $(KERNEL_OBJECTS)
+    $(LD) &lsquo;<samp>-T</samp>&rsquo; &lsquo;<tt>link.ld</tt>&rsquo; &lsquo;<samp>-o</samp>&rsquo; $(KERNEL_IMG) $(KERNEL_OBJECTS)
+</pre></td></tr></table>
+
+<p>The &lsquo;<samp>-T</samp>&rsquo; option instructs the linker <code>ld</code> to use the
+commands in the script file &lsquo;<tt>link.ld</tt>&rsquo;. It specifies the various
+segments used by the program. In the file we specify 3 segments:
+</p>
+<ul>
+<li>
+&bull;<code>.text</code> - Code segment
+
+<p>&bull;<code>.data</code> - Data segment
+</p>
+<p>&bull;<code>.bss</code> -  Stack segment
+</p></li></ul>
+
+<hr size="6">
+<a name="link_002eld-source-file"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Assembly" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#C" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Assembly" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h3 class="unnumberedsubsec">link.ld source file</h3>
+
+<table><tr><td>&nbsp;</td><td><pre class="example"><code>OUTPUT_FORMAT(&quot;binary&quot;)</code>
+<code>ENTRY(start)</code>
+<code>phys = 0x00100000;</code>
+<code>SECTIONS</code>
+<code>{</code>
+<code>  .text phys : AT(phys) {</code>
+<code>    code = .;</code>
+<code>    *(.text)</code>
+<code>    *(.rodata)</code>
+<code>    . = ALIGN(4096);</code>
+<code>  }</code>
+<code>  .data : AT(phys + (data - code))</code>
+<code>  {</code>
+<code>    data = .;</code>
+<code>    *(.data)</code>
+<code>    . = ALIGN(4096);</code>
+<code>  }</code>
+<code>  .bss : AT(phys + (bss - code))</code>
+<code>  {</code>
+<code>    bss = .;</code>
+<code>    *(.bss)</code>
+<code>    . = ALIGN(4096);</code>
+<code>  }</code>
+<code> . = ALIGN(4096);</code>
+<code>  end = .;</code>
+<code>}</code>
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="C"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#link_002eld-source-file" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-Run_002dTime-Library" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="C-1"></a>
+<h2 class="section">4.2 C</h2>
+<a name="index-C"></a>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="The-Run_002dTime-Library"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#C" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#C" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="The-Run_002dTime-Library-1"></a>
+<h3 class="subsection">4.2.1 The Run-Time Library</h3>
+<a name="index-RTL"></a>
+<a name="index-Run_002dTime-Library"></a>
+<a name="index-compiler"></a>
+<a name="index-OS"></a>
+<a name="index-portable"></a>
+<a name="index-kernel"></a>
+
+<p>A major part of writing code for your a kernel is getting suckered into
+rewriting the <em>run-time library</em>, also known as <code>libc</code>. This is
+because the <em>RTL</em> is the most <acronym>OS</acronym> <em>dependent</em> part of
+the compiler package: the C <acronym>RTL</acronym> provides enough functionality
+to allow you to write <em>portable</em> programs, but the inner workings
+of the <acronym>RTL</acronym> are <em>dependent</em> on the <acronym>OS</acronym> in use.
+</p>
+<p>The aim is to replicate the library defined by the <em>ISO</em>
+<a name="DOCF3" href="#FOOT3">(3)</a> C standard because
+this will make porting programs to my kernel easier. Writing a
+non-standard library will only result in having to re-write any
+application your trying to port; not to mention many open source
+projects that do conform to these standards will be open for me to use.
+</p>
+<a name="index-open-source"></a>
+
+
+<hr size="6">
+<a name="Multitasking"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-Run_002dTime-Library" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Memory" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Programming-the-kernel" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Memory" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Multitasking-1"></a>
+<h1 class="chapter">5. Multitasking</h1>
+
+<hr size="6">
+<a name="Memory"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Multitasking" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Dynamic-Memory-Allocation" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Multitasking" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Dynamic-Memory-Allocation" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Memory-1"></a>
+<h1 class="chapter">6. Memory</h1>
+
+<hr size="6">
+<a name="Dynamic-Memory-Allocation"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Memory" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#System-calls" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Memory" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#System-calls" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Dynamic-Memory-Allocation-1"></a>
+<h1 class="chapter">7. Dynamic Memory Allocation</h1>
+
+<hr size="6">
+<a name="System-calls"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Dynamic-Memory-Allocation" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#I_002fO" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Dynamic-Memory-Allocation" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#I_002fO" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="System-calls-1"></a>
+<h1 class="chapter">8. System calls</h1>
+
+<table><tr><td>&nbsp;</td><td><table class="cartouche" border="1"><tr><td>
+<pre class="example">        Source for system calls are located in &lsquo;<tt>syscall.c</tt>&rsquo;,
+&lsquo;<tt>fscalls.c</tt>&rsquo;, &lsquo;<tt>filedesc.c</tt>&rsquo;, &lsquo;<tt>unixproc.c</tt>&rsquo;, &lsquo;<tt>pipe.c</tt>&rsquo;.
+</pre></td></tr></table>
+</td></tr></table>
+
+<p>When the interrupt occurs, the CPU switches to kernel mode, and
+executes the interrupt handler, which is actually implemented in
+assembler within &lsquo;<tt>start.s</tt>&rsquo;. This pushes the register values onto
+the stack, and then calls the <code>interrupt_handler</code> function, which is
+implemented in <code>C</code>.  The registers that were put onto the stack are
+available as a parameter to this function, as a regs object. The
+interrupt handler then calls the <code>syscall</code> function, which inspects the
+registers to determine which system call was requested, and then
+dispatches to the appropriate handler function. 
+</p>
+<p>For example the system call <code>write</code> is implemented by the handler
+function <code>syscall_write</code>. The parameters to the system call may
+be accessed by looking at the process&rsquo;s stack. One of the saved
+registers is the stack pointer, which the syscall function uses to
+determine the location in memory of the parameters, which it then
+passes to the handler function. The handler for the system call then
+performs whatever actions are necessary, which can include privileged
+operations such as writing to any area of memory, since this code runs
+in kernel mode. Once the handler function returns, control is passed
+backwards along the same path, until it returns to the process that
+was previously executing. In some cases, such as the read or exit
+system calls, the process may have been killed or suspended. If this
+is the case, syscall performs a context switch, so that a different
+process will be executed when the interrupt handler returns.
+</p>
+<p>The <code>exit</code> system call is used by a process to terminate itself. When
+this call is made, the <code>kill_process</code> function is called, and the
+handler function returns the special value <code>-ESUSPEND</code>, indicating to
+the syscall dispatching function that the current process is no longer
+running, and it should perform a context switch. Processes should
+always call <code>exit</code> as their last action, to indicate the kernel that
+they have no more instructions to be executed.
+</p>
+<p>List of all the syscalls RhythmOS has available:
+</p><table><tr><td>&nbsp;</td><td><table class="cartouche" border="1"><tr><td>
+<pre class="example">          KERNEL             USER         LOCATION
+          -----------------------------------------
+          syscall_pipe       pipe         pipe.c
+          syscall_getpid     getpid       syscall.c
+          syscall_exit       exit         syscall.c
+          syscall_write      write        syscall.c
+          syscall_read       read         syscall.c
+          syscall_geterrno   geterrno     syscall.c
+          syscall_brk        brk          syscall.c
+          syscall_send       send         syscall.c
+          syscall_receive    receive      syscall.c
+          syscall_kill       kill         syscall.c
+          syscall_close      close        filedesc.c
+          syscall_dup2       dup2         filedesc.c
+          syscall_fork       fork         unixproc.c
+          syscall_execve     execve       unixproc.c
+          syscall_waitpid    waitpid      unixproc.c
+          syscall_stat       stat         fscalls.c
+          syscall_open       open         fscalls.c
+          syscall_chdir      chdir        fscalls.c
+          syscall_getcwd     getcwd       fscalls.c
+          syscall_getdent    getdent      fscalls.c
+</pre></td></tr></table>
+</td></tr></table>
+
+
+<hr size="6">
+<a name="I_002fO"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#System-calls" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Filesystems" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#System-calls" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Filesystems" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="I_002fO-1"></a>
+<h1 class="chapter">9. I/O</h1>
+
+<hr size="6">
+<a name="Filesystems"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#I_002fO" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Reporting-bugs" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#I_002fO" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Reporting-bugs" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Filesystems-1"></a>
+<h1 class="chapter">10. Filesystems</h1>
+
+<p>The contents of the root filesystem must be adequate to <em>boot</em>, <em>restore</em>,
+and/or <em>recover</em> the system.
+</p>
+<ul>
+<li>&bull;To <em>boot</em> a system, enough must be present on the root partition to mount
+other filesystems. This includes utilities, configuration, boot loader
+information, and other essential start-up data.
+
+<p>&bull;For the <em>recovery</em> of a system, utilities are needed by the user
+to diagnose and reconstruct the damaged system; these utilities need
+be present on the root filesystem.
+</p>
+<p>&bull;To <em>restore</em> a system, those utilities needed to restore from system backups
+(on floppy, tape, etc.) must be present on the root filesystem.
+</p></li></ul>
+
+<p>See
+<a href="http://www.pathname.com/fhs/pub/fhs-2.3.html#THEROOTFILESYSTEM">The Root Filesystem Standards</a> for more a more indepth analysis.
+</p>
+<p>Below is an example of a root filesystem &lsquo;<tt>/</tt>&rsquo;. Ones marked with an
+asterisk (&lt;*&gt;) are currently beind used by <code>RhythmOS</code>.
+</p>
+<dl compact="compact">
+<dt> <code><em>Rootfs file system structure</em></code></dt>
+<dt> <code>&lsquo;<tt>/bin</tt>&rsquo;</code></dt>
+<dd><p>&lt;*&gt; Essential command binaries
+</p></dd>
+<dt> <code>&lsquo;<tt>/boot</tt>&rsquo;</code></dt>
+<dd><p>Static files of the boot loader
+</p></dd>
+<dt> <code>&lsquo;<tt>/dev</tt>&rsquo;</code></dt>
+<dd><p>Device files
+</p></dd>
+<dt> <code>&lsquo;<tt>/etc</tt>&rsquo;</code></dt>
+<dd><p>&lt;*&gt; Host-specific system configuration
+</p></dd>
+<dt> <code>&lsquo;<tt>/lib</tt>&rsquo;</code></dt>
+<dd><p>Essential shared libraries and kernel modules
+</p></dd>
+<dt> <code>&lsquo;<tt>/media</tt>&rsquo;</code></dt>
+<dd><p>Mount point for removeable media
+</p></dd>
+<dt> <code>&lsquo;<tt>/mnt</tt>&rsquo;</code></dt>
+<dd><p>Mount point for mounting a filesystem temporarily
+</p></dd>
+<dt> <code>&lsquo;<tt>/opt</tt>&rsquo;</code></dt>
+<dd><p>Add-on application software packages
+</p></dd>
+<dt> <code>&lsquo;<tt>/sbin</tt>&rsquo;</code></dt>
+<dd><p>Essential system binaries
+</p></dd>
+<dt> <code>&lsquo;<tt>/srv</tt>&rsquo;</code></dt>
+<dd><p>Data for services provided by this system
+</p></dd>
+<dt> <code>&lsquo;<tt>/tmp</tt>&rsquo;</code></dt>
+<dd><p>Temporary files
+</p></dd>
+<dt> <code>&lsquo;<tt>/usr</tt>&rsquo;</code></dt>
+<dd><p>&lt;*&gt; Secondary hierarchy
+</p></dd>
+<dt> <code>&lsquo;<tt>/var</tt>&rsquo;</code></dt>
+<dd><p>Variable data
+</p></dd>
+</dl>
+
+
+
+<hr size="6">
+<a name="Reporting-bugs"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Filesystems" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Filesystems" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Reporting-bugs-1"></a>
+<h1 class="chapter">11. Reporting bugs</h1>
+
+<a name="index-bug-reporting"></a>
+<a name="index-problems"></a>
+<a name="index-reporting-bugs"></a>
+
+<p>To report bugs or suggest enhancements for RhythmOS, please send
+electronic mail to <a href="mailto:dustindorroh@gmail.com">dustindorroh@gmail.com</a>.
+</p>
+
+<hr size="6">
+<a name="The-GNU-Manifesto"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Reporting-bugs" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#What_0027s-GNU_003f-Gnu_0027s-Not-Unix_0021" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Reporting-bugs" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1 class="unnumbered">The GNU Manifesto</h1>
+
+<blockquote><p>The GNU Manifesto which appears below was written by Richard Stallman at
+the beginning of the GNU project, to ask for participation and support.
+For the first few years, it was updated in minor ways to account for
+developments, but now it seems best to leave it unchanged as most people
+have seen it.
+</p>
+<p>Since that time, we have learned about certain common misunderstandings
+that different wording could help avoid.  Footnotes added in 1993 help
+clarify these points.
+</p>
+<p>For up-to-date information about available GNU software, please see
+our web site, <a href="http://www.gnu.org">http://www.gnu.org</a>.  For software tasks and other
+ways to contribute, see <a href="http://www.gnu.org/help">http://www.gnu.org/help</a>.
+</p></blockquote>
+
+<hr size="6">
+<a name="What_0027s-GNU_003f-Gnu_0027s-Not-Unix_0021"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Why-I-Must-Write-GNU" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">What&rsquo;s GNU? Gnu&rsquo;s Not Unix!</h2>
+
+<p>GNU, which stands for Gnu&rsquo;s Not Unix, is the name for the complete
+Unix-compatible software system which I am writing so that I can give it
+away free to everyone who can use it.<a name="DOCF4" href="#FOOT4">(4)</a> Several other volunteers are helping
+me.  Contributions of time, money, programs and equipment are greatly
+needed.
+</p>
+<p>So far we have an Emacs text editor with Lisp for writing editor commands,
+a source level debugger, a yacc-compatible parser generator, a linker, and
+around 35 utilities.  A shell (command interpreter) is nearly completed.  A
+new portable optimizing C compiler has compiled itself and may be released
+this year.  An initial kernel exists but many more features are needed to
+emulate Unix.  When the kernel and compiler are finished, it will be
+possible to distribute a GNU system suitable for program development.  We
+will use TeX as our text formatter, but an nroff is being worked on.  We
+will use the free, portable X window system as well.  After this we will
+add a portable Common Lisp, an Empire game, a spreadsheet, and hundreds of
+other things, plus on-line documentation.  We hope to supply, eventually,
+everything useful that normally comes with a Unix system, and more.
+</p>
+<p>GNU will be able to run Unix programs, but will not be identical to Unix.
+We will make all improvements that are convenient, based on our experience
+with other operating systems.  In particular, we plan to have longer
+file names, file version numbers, a crashproof file system, file name
+completion perhaps, terminal-independent display support, and perhaps
+eventually a Lisp-based window system through which several Lisp programs
+and ordinary Unix programs can share a screen.  Both C and Lisp will be
+available as system programming languages.  We will try to support UUCP,
+MIT Chaosnet, and Internet protocols for communication.
+</p>
+<p>GNU is aimed initially at machines in the 68000/16000 class with virtual
+memory, because they are the easiest machines to make it run on.  The extra
+effort to make it run on smaller machines will be left to someone who wants
+to use it on them.
+</p>
+<p>To avoid horrible confusion, please pronounce the &lsquo;G&rsquo; in the word &lsquo;GNU&rsquo;
+when it is the name of this project.
+</p>
+<hr size="6">
+<a name="Why-I-Must-Write-GNU"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#What_0027s-GNU_003f-Gnu_0027s-Not-Unix_0021" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Why-GNU-Will-Be-Compatible-with-Unix" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">Why I Must Write GNU</h2>
+
+<p>I consider that the golden rule requires that if I like a program I must
+share it with other people who like it.  Software sellers want to divide
+the users and conquer them, making each user agree not to share with
+others.  I refuse to break solidarity with other users in this way.  I
+cannot in good conscience sign a nondisclosure agreement or a software
+license agreement.  For years I worked within the Artificial Intelligence
+Lab to resist such tendencies and other inhospitalities, but eventually
+they had gone too far: I could not remain in an institution where such
+things are done for me against my will.
+</p>
+<p>So that I can continue to use computers without dishonor, I have decided to
+put together a sufficient body of free software so that I will be able to
+get along without any software that is not free.  I have resigned from the
+AI lab to deny MIT any legal excuse to prevent me from giving GNU away.
+</p>
+<hr size="6">
+<a name="Why-GNU-Will-Be-Compatible-with-Unix"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Why-I-Must-Write-GNU" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#How-GNU-Will-Be-Available" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">Why GNU Will Be Compatible with Unix</h2>
+
+<p>Unix is not my ideal system, but it is not too bad.  The essential features
+of Unix seem to be good ones, and I think I can fill in what Unix lacks
+without spoiling them.  And a system compatible with Unix would be
+convenient for many other people to adopt.
+</p>
+<hr size="6">
+<a name="How-GNU-Will-Be-Available"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Why-GNU-Will-Be-Compatible-with-Unix" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Why-Many-Other-Programmers-Want-to-Help" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">How GNU Will Be Available</h2>
+
+<p>GNU is not in the public domain.  Everyone will be permitted to modify and
+redistribute GNU, but no distributor will be allowed to restrict its
+further redistribution.  That is to say, proprietary modifications will not
+be allowed.  I want to make sure that all versions of GNU remain free.
+</p>
+<hr size="6">
+<a name="Why-Many-Other-Programmers-Want-to-Help"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#How-GNU-Will-Be-Available" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#How-You-Can-Contribute" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">Why Many Other Programmers Want to Help</h2>
+
+<p>I have found many other programmers who are excited about GNU and want to
+help.
+</p>
+<p>Many programmers are unhappy about the commercialization of system
+software.  It may enable them to make more money, but it requires them to
+feel in conflict with other programmers in general rather than feel as
+comrades.  The fundamental act of friendship among programmers is the
+sharing of programs; marketing arrangements now typically used essentially
+forbid programmers to treat others as friends.  The purchaser of software
+must choose between friendship and obeying the law.  Naturally, many decide
+that friendship is more important.  But those who believe in law often do
+not feel at ease with either choice.  They become cynical and think that
+programming is just a way of making money.
+</p>
+<p>By working on and using GNU rather than proprietary programs, we can be
+hospitable to everyone and obey the law.  In addition, GNU serves as an
+example to inspire and a banner to rally others to join us in sharing.
+This can give us a feeling of harmony which is impossible if we use
+software that is not free.  For about half the programmers I talk to, this
+is an important happiness that money cannot replace.
+</p>
+<hr size="6">
+<a name="How-You-Can-Contribute"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Why-Many-Other-Programmers-Want-to-Help" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Why-All-Computer-Users-Will-Benefit" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">How You Can Contribute</h2>
+
+<p>I am asking computer manufacturers for donations of machines and money.
+I&rsquo;m asking individuals for donations of programs and work.
+</p>
+<p>One consequence you can expect if you donate machines is that GNU will run
+on them at an early date.  The machines should be complete, ready to use
+systems, approved for use in a residential area, and not in need of
+sophisticated cooling or power.
+</p>
+<p>I have found very many programmers eager to contribute part-time work for
+GNU.  For most projects, such part-time distributed work would be very hard
+to coordinate; the independently-written parts would not work together.
+But for the particular task of replacing Unix, this problem is absent.  A
+complete Unix system contains hundreds of utility programs, each of which
+is documented separately.  Most interface specifications are fixed by Unix
+compatibility.  If each contributor can write a compatible replacement for
+a single Unix utility, and make it work properly in place of the original
+on a Unix system, then these utilities will work right when put together.
+Even allowing for Murphy to create a few unexpected problems, assembling
+these components will be a feasible task.  (The kernel will require closer
+communication and will be worked on by a small, tight group.)
+</p>
+<p>If I get donations of money, I may be able to hire a few people full or
+part time.  The salary won&rsquo;t be high by programmers&rsquo; standards, but I&rsquo;m
+looking for people for whom building community spirit is as important as
+making money.  I view this as a way of enabling dedicated people to devote
+their full energies to working on GNU by sparing them the need to make a
+living in another way.
+</p>
+<hr size="6">
+<a name="Why-All-Computer-Users-Will-Benefit"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#How-You-Can-Contribute" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Some-Easily-Rebutted-Objections-to-GNU_0027s-Goals" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">Why All Computer Users Will Benefit</h2>
+
+<p>Once GNU is written, everyone will be able to obtain good system
+software free, just like air.<a name="DOCF5" href="#FOOT5">(5)</a>
+</p>
+<p>This means much more than just saving everyone the price of a Unix license.
+It means that much wasteful duplication of system programming effort will
+be avoided.  This effort can go instead into advancing the state of the
+art.
+</p>
+<p>Complete system sources will be available to everyone.  As a result, a user
+who needs changes in the system will always be free to make them himself,
+or hire any available programmer or company to make them for him.  Users
+will no longer be at the mercy of one programmer or company which owns the
+sources and is in sole position to make changes.
+</p>
+<p>Schools will be able to provide a much more educational environment by
+encouraging all students to study and improve the system code.  Harvard&rsquo;s
+computer lab used to have the policy that no program could be installed on
+the system if its sources were not on public display, and upheld it by
+actually refusing to install certain programs.  I was very much inspired by
+this.
+</p>
+<p>Finally, the overhead of considering who owns the system software and what
+one is or is not entitled to do with it will be lifted.
+</p>
+<p>Arrangements to make people pay for using a program, including licensing of
+copies, always incur a tremendous cost to society through the cumbersome
+mechanisms necessary to figure out how much (that is, which programs) a
+person must pay for.  And only a police state can force everyone to obey
+them.  Consider a space station where air must be manufactured at great
+cost: charging each breather per liter of air may be fair, but wearing the
+metered gas mask all day and all night is intolerable even if everyone can
+afford to pay the air bill.  And the TV cameras everywhere to see if you
+ever take the mask off are outrageous.  It&rsquo;s better to support the air
+plant with a head tax and chuck the masks.
+</p>
+<p>Copying all or parts of a program is as natural to a programmer as
+breathing, and as productive.  It ought to be as free.
+</p>
+<hr size="6">
+<a name="Some-Easily-Rebutted-Objections-to-GNU_0027s-Goals"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Why-All-Computer-Users-Will-Benefit" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h2 class="unnumberedsec">Some Easily Rebutted Objections to GNU&rsquo;s Goals</h2>
+
+<blockquote><p>&ldquo;Nobody will use it if it is free, because that means they can&rsquo;t rely
+on any support.&rdquo;
+</p>
+<p>&ldquo;You have to charge for the program to pay for providing the
+support.&rdquo;
+</p></blockquote>
+
+<p>If people would rather pay for GNU plus service than get GNU free without
+service, a company to provide just service to people who have obtained GNU
+free ought to be profitable.<a name="DOCF6" href="#FOOT6">(6)</a>
+</p>
+<p>We must distinguish between support in the form of real programming work
+and mere handholding.  The former is something one cannot rely on from a
+software vendor.  If your problem is not shared by enough people, the
+vendor will tell you to get lost.
+</p>
+<p>If your business needs to be able to rely on support, the only way is to
+have all the necessary sources and tools.  Then you can hire any available
+person to fix your problem; you are not at the mercy of any individual.
+With Unix, the price of sources puts this out of consideration for most
+businesses.  With GNU this will be easy.  It is still possible for there to
+be no available competent person, but this problem cannot be blamed on
+distribution arrangements.  GNU does not eliminate all the world&rsquo;s problems,
+only some of them.
+</p>
+<p>Meanwhile, the users who know nothing about computers need handholding:
+doing things for them which they could easily do themselves but don&rsquo;t know
+how.
+</p>
+<p>Such services could be provided by companies that sell just hand-holding
+and repair service.  If it is true that users would rather spend money and
+get a product with service, they will also be willing to buy the service
+having got the product free.  The service companies will compete in quality
+and price; users will not be tied to any particular one.  Meanwhile, those
+of us who don&rsquo;t need the service should be able to use the program without
+paying for the service.
+</p>
+<blockquote><p>&ldquo;You cannot reach many people without advertising,
+and you must charge for the program to support that.&rdquo;
+</p>
+<p>&ldquo;It&rsquo;s no use advertising a program people can get free.&rdquo;
+</p></blockquote>
+
+<p>There are various forms of free or very cheap publicity that can be used to
+inform numbers of computer users about something like GNU.  But it may be
+true that one can reach more microcomputer users with advertising.  If this
+is really so, a business which advertises the service of copying and
+mailing GNU for a fee ought to be successful enough to pay for its
+advertising and more.  This way, only the users who benefit from the
+advertising pay for it.
+</p>
+<p>On the other hand, if many people get GNU from their friends, and such
+companies don&rsquo;t succeed, this will show that advertising was not really
+necessary to spread GNU.  Why is it that free market advocates don&rsquo;t
+want to let the free market decide this?<a name="DOCF7" href="#FOOT7">(7)</a>
+</p>
+<blockquote><p>&ldquo;My company needs a proprietary operating system
+to get a competitive edge.&rdquo;
+</p></blockquote>
+
+<p>GNU will remove operating system software from the realm of competition.
+You will not be able to get an edge in this area, but neither will your
+competitors be able to get an edge over you.  You and they will compete in
+other areas, while benefiting mutually in this one.  If your business is
+selling an operating system, you will not like GNU, but that&rsquo;s tough on
+you.  If your business is something else, GNU can save you from being
+pushed into the expensive business of selling operating systems.
+</p>
+<p>I would like to see GNU development supported by gifts from many
+manufacturers and users, reducing the cost to each.<a name="DOCF8" href="#FOOT8">(8)</a>
+</p>
+<blockquote><p>&ldquo;Don&rsquo;t programmers deserve a reward for their creativity?&rdquo;
+</p></blockquote>
+
+<p>If anything deserves a reward, it is social contribution.  Creativity can
+be a social contribution, but only in so far as society is free to use the
+results.  If programmers deserve to be rewarded for creating innovative
+programs, by the same token they deserve to be punished if they restrict
+the use of these programs.
+</p>
+<blockquote><p>&ldquo;Shouldn&rsquo;t a programmer be able to ask for a reward for his creativity?&rdquo;
+</p></blockquote>
+
+<p>There is nothing wrong with wanting pay for work, or seeking to maximize
+one&rsquo;s income, as long as one does not use means that are destructive.  But
+the means customary in the field of software today are based on
+destruction.
+</p>
+<p>Extracting money from users of a program by restricting their use of it is
+destructive because the restrictions reduce the amount and the ways that
+the program can be used.  This reduces the amount of wealth that humanity
+derives from the program.  When there is a deliberate choice to restrict,
+the harmful consequences are deliberate destruction.
+</p>
+<p>The reason a good citizen does not use such destructive means to become
+wealthier is that, if everyone did so, we would all become poorer from the
+mutual destructiveness.  This is Kantian ethics; or, the Golden Rule.
+Since I do not like the consequences that result if everyone hoards
+information, I am required to consider it wrong for one to do so.
+Specifically, the desire to be rewarded for one&rsquo;s creativity does not
+justify depriving the world in general of all or part of that creativity.
+</p>
+<blockquote><p>&ldquo;Won&rsquo;t programmers starve?&rdquo;
+</p></blockquote>
+
+<p>I could answer that nobody is forced to be a programmer.  Most of us cannot
+manage to get any money for standing on the street and making faces.  But
+we are not, as a result, condemned to spend our lives standing on the
+street making faces, and starving.  We do something else.
+</p>
+<p>But that is the wrong answer because it accepts the questioner&rsquo;s implicit
+assumption: that without ownership of software, programmers cannot possibly
+be paid a cent.  Supposedly it is all or nothing.
+</p>
+<p>The real reason programmers will not starve is that it will still be
+possible for them to get paid for programming; just not paid as much as
+now.
+</p>
+<p>Restricting copying is not the only basis for business in software.  It is
+the most common basis because it brings in the most money.  If it were
+prohibited, or rejected by the customer, software business would move to
+other bases of organization which are now used less often.  There are
+always numerous ways to organize any kind of business.
+</p>
+<p>Probably programming will not be as lucrative on the new basis as it is
+now.  But that is not an argument against the change.  It is not considered
+an injustice that sales clerks make the salaries that they now do.  If
+programmers made the same, that would not be an injustice either.  (In
+practice they would still make considerably more than that.)
+</p>
+<blockquote><p>&ldquo;Don&rsquo;t people have a right to control how their creativity is used?&rdquo;
+</p></blockquote>
+
+<p>&ldquo;Control over the use of one&rsquo;s ideas&rdquo; really constitutes control over
+other people&rsquo;s lives; and it is usually used to make their lives more
+difficult.
+</p>
+<p>People who have studied the issue of intellectual property
+rights<a name="DOCF9" href="#FOOT9">(9)</a> carefully
+(such as lawyers) say that there is no intrinsic right to intellectual
+property.  The kinds of supposed intellectual property rights that the
+government recognizes were created by specific acts of legislation for
+specific purposes.
+</p>
+<p>For example, the patent system was established to encourage inventors to
+disclose the details of their inventions.  Its purpose was to help society
+rather than to help inventors.  At the time, the life span of 17 years for
+a patent was short compared with the rate of advance of the state of the
+art.  Since patents are an issue only among manufacturers, for whom the
+cost and effort of a license agreement are small compared with setting up
+production, the patents often do not do much harm.  They do not obstruct
+most individuals who use patented products.
+</p>
+<p>The idea of copyright did not exist in ancient times, when authors
+frequently copied other authors at length in works of non-fiction.  This
+practice was useful, and is the only way many authors&rsquo; works have survived
+even in part.  The copyright system was created expressly for the purpose
+of encouraging authorship.  In the domain for which it was
+invented&mdash;books, which could be copied economically only on a printing
+press&mdash;it did little harm, and did not obstruct most of the individuals
+who read the books.
+</p>
+<p>All intellectual property rights are just licenses granted by society
+because it was thought, rightly or wrongly, that society as a whole would
+benefit by granting them.  But in any particular situation, we have to ask:
+are we really better off granting such license?  What kind of act are we
+licensing a person to do?
+</p>
+<p>The case of programs today is very different from that of books a hundred
+years ago.  The fact that the easiest way to copy a program is from one
+neighbor to another, the fact that a program has both source code and
+object code which are distinct, and the fact that a program is used rather
+than read and enjoyed, combine to create a situation in which a person who
+enforces a copyright is harming society as a whole both materially and
+spiritually; in which a person should not do so regardless of whether the
+law enables him to.
+</p>
+<blockquote><p>&ldquo;Competition makes things get done better.&rdquo;
+</p></blockquote>
+
+<p>The paradigm of competition is a race: by rewarding the winner, we
+encourage everyone to run faster.  When capitalism really works this way,
+it does a good job; but its defenders are wrong in assuming it always works
+this way.  If the runners forget why the reward is offered and become
+intent on winning, no matter how, they may find other strategies&mdash;such as,
+attacking other runners.  If the runners get into a fist fight, they will
+all finish late.
+</p>
+<p>Proprietary and secret software is the moral equivalent of runners in a
+fist fight.  Sad to say, the only referee we&rsquo;ve got does not seem to
+object to fights; he just regulates them (&ldquo;For every ten yards you run,
+you can fire one shot&rdquo;).  He really ought to break them up, and penalize
+runners for even trying to fight.
+</p>
+<blockquote><p>&ldquo;Won&rsquo;t everyone stop programming without a monetary incentive?&rdquo;
+</p></blockquote>
+
+<p>Actually, many people will program with absolutely no monetary incentive.
+Programming has an irresistible fascination for some people, usually the
+people who are best at it.  There is no shortage of professional musicians
+who keep at it even though they have no hope of making a living that way.
+</p>
+<p>But really this question, though commonly asked, is not appropriate to the
+situation.  Pay for programmers will not disappear, only become less.  So
+the right question is, will anyone program with a reduced monetary
+incentive?  My experience shows that they will.
+</p>
+<p>For more than ten years, many of the world&rsquo;s best programmers worked at the
+Artificial Intelligence Lab for far less money than they could have had
+anywhere else.  They got many kinds of non-monetary rewards: fame and
+appreciation, for example.  And creativity is also fun, a reward in itself.
+</p>
+<p>Then most of them left when offered a chance to do the same interesting
+work for a lot of money.
+</p>
+<p>What the facts show is that people will program for reasons other than
+riches; but if given a chance to make a lot of money as well, they will
+come to expect and demand it.  Low-paying organizations do poorly in
+competition with high-paying ones, but they do not have to do badly if the
+high-paying ones are banned.
+</p>
+<blockquote><p>&ldquo;We need the programmers desperately.  If they demand that we
+stop helping our neighbors, we have to obey.&rdquo;
+</p></blockquote>
+
+<p>You&rsquo;re never so desperate that you have to obey this sort of demand.
+Remember: millions for defense, but not a cent for tribute!
+</p>
+<blockquote><p>&ldquo;Programmers need to make a living somehow.&rdquo;
+</p></blockquote>
+
+<p>In the short run, this is true.  However, there are plenty of ways that
+programmers could make a living without selling the right to use a program.
+This way is customary now because it brings programmers and businessmen the
+most money, not because it is the only way to make a living.  It is easy to
+find other ways if you want to find them.  Here are a number of examples.
+</p>
+<p>A manufacturer introducing a new computer will pay for the porting of
+operating systems onto the new hardware.
+</p>
+<p>The sale of teaching, hand-holding and maintenance services could also
+employ programmers.
+</p>
+<p>People with new ideas could distribute programs as
+freeware<a name="DOCF10" href="#FOOT10">(10)</a>, asking for donations from satisfied users, or selling
+hand-holding services.  I have met people who are already working this
+way successfully.
+</p>
+<p>Users with related needs can form users&rsquo; groups, and pay dues.  A group
+would contract with programming companies to write programs that the
+group&rsquo;s members would like to use.
+</p>
+<p>All sorts of development can be funded with a Software Tax:
+</p>
+<blockquote><p>Suppose everyone who buys a computer has to pay x percent of
+the price as a software tax.  The government gives this to
+an agency like the NSF to spend on software development.
+</p>
+<p>But if the computer buyer makes a donation to software development
+himself, he can take a credit against the tax.  He can donate to
+the project of his own choosing&mdash;often, chosen because he hopes to
+use the results when it is done.  He can take a credit for any amount
+of donation up to the total tax he had to pay.
+</p>
+<p>The total tax rate could be decided by a vote of the payers of
+the tax, weighted according to the amount they will be taxed on.
+</p>
+<p>The consequences:
+</p>
+<ul>
+<li>
+The computer-using community supports software development.
+</li><li>
+This community decides what level of support is needed.
+</li><li>
+Users who care which projects their share is spent on
+can choose this for themselves.
+</li></ul>
+</blockquote>
+
+<p>In the long run, making programs free is a step toward the post-scarcity
+world, where nobody will have to work very hard just to make a living.
+People will be free to devote themselves to activities that are fun, such
+as programming, after spending the necessary ten hours a week on required
+tasks such as legislation, family counseling, robot repair and asteroid
+prospecting.  There will be no need to be able to make a living from
+programming.
+</p>
+<p>We have already greatly reduced the amount of work that the whole society
+must do for its actual productivity, but only a little of this has
+translated itself into leisure for workers because much nonproductive
+activity is required to accompany productive activity.  The main causes of
+this are bureaucracy and isometric struggles against competition.  Free
+software will greatly reduce these drains in the area of software
+production.  We must do this, in order for technical gains in productivity
+to translate into less work for us.
+</p>
+
+<hr size="6">
+<a name="GNU-Free-Documentation-License"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Some-Easily-Rebutted-Objections-to-GNU_0027s-Goals" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#The-GNU-Manifesto" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1 class="appendix">A. GNU Free Documentation License</h1>
+
+<p align="center"> Version 1.3, 3 November 2008
+</p>
+
+<table><tr><td>&nbsp;</td><td><pre class="display">Copyright &copy; 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
+<a href="http://fsf.org/">http://fsf.org/</a>
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
+</pre></td></tr></table>
+
+<ol>
+<li>
+PREAMBLE
+
+<p>The purpose of this License is to make a manual, textbook, or other
+functional and useful document <em>free</em> in the sense of freedom: to
+assure everyone the effective freedom to copy and redistribute it,
+with or without modifying it, either commercially or noncommercially.
+Secondarily, this License preserves for the author and publisher a way
+to get credit for their work, while not being considered responsible
+for modifications made by others.
+</p>
+<p>This License is a kind of &ldquo;copyleft&rdquo;, which means that derivative
+works of the document must themselves be free in the same sense.  It
+complements the GNU General Public License, which is a copyleft
+license designed for free software.
+</p>
+<p>We have designed this License in order to use it for manuals for free
+software, because free software needs free documentation: a free
+program should come with manuals providing the same freedoms that the
+software does.  But this License is not limited to software manuals;
+it can be used for any textual work, regardless of subject matter or
+whether it is published as a printed book.  We recommend this License
+principally for works whose purpose is instruction or reference.
+</p>
+</li><li>
+APPLICABILITY AND DEFINITIONS
+
+<p>This License applies to any manual or other work, in any medium, that
+contains a notice placed by the copyright holder saying it can be
+distributed under the terms of this License.  Such a notice grants a
+world-wide, royalty-free license, unlimited in duration, to use that
+work under the conditions stated herein.  The &ldquo;Document&rdquo;, below,
+refers to any such manual or work.  Any member of the public is a
+licensee, and is addressed as &ldquo;you&rdquo;.  You accept the license if you
+copy, modify or distribute the work in a way requiring permission
+under copyright law.
+</p>
+<p>A &ldquo;Modified Version&rdquo; of the Document means any work containing the
+Document or a portion of it, either copied verbatim, or with
+modifications and/or translated into another language.
+</p>
+<p>A &ldquo;Secondary Section&rdquo; is a named appendix or a front-matter section
+of the Document that deals exclusively with the relationship of the
+publishers or authors of the Document to the Document&rsquo;s overall
+subject (or to related matters) and contains nothing that could fall
+directly within that overall subject.  (Thus, if the Document is in
+part a textbook of mathematics, a Secondary Section may not explain
+any mathematics.)  The relationship could be a matter of historical
+connection with the subject or with related matters, or of legal,
+commercial, philosophical, ethical or political position regarding
+them.
+</p>
+<p>The &ldquo;Invariant Sections&rdquo; are certain Secondary Sections whose titles
+are designated, as being those of Invariant Sections, in the notice
+that says that the Document is released under this License.  If a
+section does not fit the above definition of Secondary then it is not
+allowed to be designated as Invariant.  The Document may contain zero
+Invariant Sections.  If the Document does not identify any Invariant
+Sections then there are none.
+</p>
+<p>The &ldquo;Cover Texts&rdquo; are certain short passages of text that are listed,
+as Front-Cover Texts or Back-Cover Texts, in the notice that says that
+the Document is released under this License.  A Front-Cover Text may
+be at most 5 words, and a Back-Cover Text may be at most 25 words.
+</p>
+<p>A &ldquo;Transparent&rdquo; copy of the Document means a machine-readable copy,
+represented in a format whose specification is available to the
+general public, that is suitable for revising the document
+straightforwardly with generic text editors or (for images composed of
+pixels) generic paint programs or (for drawings) some widely available
+drawing editor, and that is suitable for input to text formatters or
+for automatic translation to a variety of formats suitable for input
+to text formatters.  A copy made in an otherwise Transparent file
+format whose markup, or absence of markup, has been arranged to thwart
+or discourage subsequent modification by readers is not Transparent.
+An image format is not Transparent if used for any substantial amount
+of text.  A copy that is not &ldquo;Transparent&rdquo; is called &ldquo;Opaque&rdquo;.
+</p>
+<p>Examples of suitable formats for Transparent copies include plain
+ASCII without markup, Texinfo input format, LaTeX input
+format, SGML or XML using a publicly available
+DTD, and standard-conforming simple HTML,
+PostScript or PDF designed for human modification.  Examples
+of transparent image formats include PNG, XCF and
+JPG.  Opaque formats include proprietary formats that can be
+read and edited only by proprietary word processors, SGML or
+XML for which the DTD and/or processing tools are
+not generally available, and the machine-generated HTML,
+PostScript or PDF produced by some word processors for
+output purposes only.
+</p>
+<p>The &ldquo;Title Page&rdquo; means, for a printed book, the title page itself,
+plus such following pages as are needed to hold, legibly, the material
+this License requires to appear in the title page.  For works in
+formats which do not have any title page as such, &ldquo;Title Page&rdquo; means
+the text near the most prominent appearance of the work&rsquo;s title,
+preceding the beginning of the body of the text.
+</p>
+<p>The &ldquo;publisher&rdquo; means any person or entity that distributes copies
+of the Document to the public.
+</p>
+<p>A section &ldquo;Entitled XYZ&rdquo; means a named subunit of the Document whose
+title either is precisely XYZ or contains XYZ in parentheses following
+text that translates XYZ in another language.  (Here XYZ stands for a
+specific section name mentioned below, such as &ldquo;Acknowledgements&rdquo;,
+&ldquo;Dedications&rdquo;, &ldquo;Endorsements&rdquo;, or &ldquo;History&rdquo;.)  To &ldquo;Preserve the Title&rdquo;
+of such a section when you modify the Document means that it remains a
+section &ldquo;Entitled XYZ&rdquo; according to this definition.
+</p>
+<p>The Document may include Warranty Disclaimers next to the notice which
+states that this License applies to the Document.  These Warranty
+Disclaimers are considered to be included by reference in this
+License, but only as regards disclaiming warranties: any other
+implication that these Warranty Disclaimers may have is void and has
+no effect on the meaning of this License.
+</p>
+</li><li>
+VERBATIM COPYING
+
+<p>You may copy and distribute the Document in any medium, either
+commercially or noncommercially, provided that this License, the
+copyright notices, and the license notice saying this License applies
+to the Document are reproduced in all copies, and that you add no other
+conditions whatsoever to those of this License.  You may not use
+technical measures to obstruct or control the reading or further
+copying of the copies you make or distribute.  However, you may accept
+compensation in exchange for copies.  If you distribute a large enough
+number of copies you must also follow the conditions in section 3.
+</p>
+<p>You may also lend copies, under the same conditions stated above, and
+you may publicly display copies.
+</p>
+</li><li>
+COPYING IN QUANTITY
+
+<p>If you publish printed copies (or copies in media that commonly have
+printed covers) of the Document, numbering more than 100, and the
+Document&rsquo;s license notice requires Cover Texts, you must enclose the
+copies in covers that carry, clearly and legibly, all these Cover
+Texts: Front-Cover Texts on the front cover, and Back-Cover Texts on
+the back cover.  Both covers must also clearly and legibly identify
+you as the publisher of these copies.  The front cover must present
+the full title with all words of the title equally prominent and
+visible.  You may add other material on the covers in addition.
+Copying with changes limited to the covers, as long as they preserve
+the title of the Document and satisfy these conditions, can be treated
+as verbatim copying in other respects.
+</p>
+<p>If the required texts for either cover are too voluminous to fit
+legibly, you should put the first ones listed (as many as fit
+reasonably) on the actual cover, and continue the rest onto adjacent
+pages.
+</p>
+<p>If you publish or distribute Opaque copies of the Document numbering
+more than 100, you must either include a machine-readable Transparent
+copy along with each Opaque copy, or state in or with each Opaque copy
+a computer-network location from which the general network-using
+public has access to download using public-standard network protocols
+a complete Transparent copy of the Document, free of added material.
+If you use the latter option, you must take reasonably prudent steps,
+when you begin distribution of Opaque copies in quantity, to ensure
+that this Transparent copy will remain thus accessible at the stated
+location until at least one year after the last time you distribute an
+Opaque copy (directly or through your agents or retailers) of that
+edition to the public.
+</p>
+<p>It is requested, but not required, that you contact the authors of the
+Document well before redistributing any large number of copies, to give
+them a chance to provide you with an updated version of the Document.
+</p>
+</li><li>
+MODIFICATIONS
+
+<p>You may copy and distribute a Modified Version of the Document under
+the conditions of sections 2 and 3 above, provided that you release
+the Modified Version under precisely this License, with the Modified
+Version filling the role of the Document, thus licensing distribution
+and modification of the Modified Version to whoever possesses a copy
+of it.  In addition, you must do these things in the Modified Version:
+</p>
+<ol>
+<li>
+Use in the Title Page (and on the covers, if any) a title distinct
+from that of the Document, and from those of previous versions
+(which should, if there were any, be listed in the History section
+of the Document).  You may use the same title as a previous version
+if the original publisher of that version gives permission.
+
+</li><li>
+List on the Title Page, as authors, one or more persons or entities
+responsible for authorship of the modifications in the Modified
+Version, together with at least five of the principal authors of the
+Document (all of its principal authors, if it has fewer than five),
+unless they release you from this requirement.
+
+</li><li>
+State on the Title page the name of the publisher of the
+Modified Version, as the publisher.
+
+</li><li>
+Preserve all the copyright notices of the Document.
+
+</li><li>
+Add an appropriate copyright notice for your modifications
+adjacent to the other copyright notices.
+
+</li><li>
+Include, immediately after the copyright notices, a license notice
+giving the public permission to use the Modified Version under the
+terms of this License, in the form shown in the Addendum below.
+
+</li><li>
+Preserve in that license notice the full lists of Invariant Sections
+and required Cover Texts given in the Document&rsquo;s license notice.
+
+</li><li>
+Include an unaltered copy of this License.
+
+</li><li>
+Preserve the section Entitled &ldquo;History&rdquo;, Preserve its Title, and add
+to it an item stating at least the title, year, new authors, and
+publisher of the Modified Version as given on the Title Page.  If
+there is no section Entitled &ldquo;History&rdquo; in the Document, create one
+stating the title, year, authors, and publisher of the Document as
+given on its Title Page, then add an item describing the Modified
+Version as stated in the previous sentence.
+
+</li><li>
+Preserve the network location, if any, given in the Document for
+public access to a Transparent copy of the Document, and likewise
+the network locations given in the Document for previous versions
+it was based on.  These may be placed in the &ldquo;History&rdquo; section.
+You may omit a network location for a work that was published at
+least four years before the Document itself, or if the original
+publisher of the version it refers to gives permission.
+
+</li><li>
+For any section Entitled &ldquo;Acknowledgements&rdquo; or &ldquo;Dedications&rdquo;, Preserve
+the Title of the section, and preserve in the section all the
+substance and tone of each of the contributor acknowledgements and/or
+dedications given therein.
+
+</li><li>
+Preserve all the Invariant Sections of the Document,
+unaltered in their text and in their titles.  Section numbers
+or the equivalent are not considered part of the section titles.
+
+</li><li>
+Delete any section Entitled &ldquo;Endorsements&rdquo;.  Such a section
+may not be included in the Modified Version.
+
+</li><li>
+Do not retitle any existing section to be Entitled &ldquo;Endorsements&rdquo; or
+to conflict in title with any Invariant Section.
+
+</li><li>
+Preserve any Warranty Disclaimers.
+</li></ol>
+
+<p>If the Modified Version includes new front-matter sections or
+appendices that qualify as Secondary Sections and contain no material
+copied from the Document, you may at your option designate some or all
+of these sections as invariant.  To do this, add their titles to the
+list of Invariant Sections in the Modified Version&rsquo;s license notice.
+These titles must be distinct from any other section titles.
+</p>
+<p>You may add a section Entitled &ldquo;Endorsements&rdquo;, provided it contains
+nothing but endorsements of your Modified Version by various
+parties&mdash;for example, statements of peer review or that the text has
+been approved by an organization as the authoritative definition of a
+standard.
+</p>
+<p>You may add a passage of up to five words as a Front-Cover Text, and a
+passage of up to 25 words as a Back-Cover Text, to the end of the list
+of Cover Texts in the Modified Version.  Only one passage of
+Front-Cover Text and one of Back-Cover Text may be added by (or
+through arrangements made by) any one entity.  If the Document already
+includes a cover text for the same cover, previously added by you or
+by arrangement made by the same entity you are acting on behalf of,
+you may not add another; but you may replace the old one, on explicit
+permission from the previous publisher that added the old one.
+</p>
+<p>The author(s) and publisher(s) of the Document do not by this License
+give permission to use their names for publicity for or to assert or
+imply endorsement of any Modified Version.
+</p>
+</li><li>
+COMBINING DOCUMENTS
+
+<p>You may combine the Document with other documents released under this
+License, under the terms defined in section 4 above for modified
+versions, provided that you include in the combination all of the
+Invariant Sections of all of the original documents, unmodified, and
+list them all as Invariant Sections of your combined work in its
+license notice, and that you preserve all their Warranty Disclaimers.
+</p>
+<p>The combined work need only contain one copy of this License, and
+multiple identical Invariant Sections may be replaced with a single
+copy.  If there are multiple Invariant Sections with the same name but
+different contents, make the title of each such section unique by
+adding at the end of it, in parentheses, the name of the original
+author or publisher of that section if known, or else a unique number.
+Make the same adjustment to the section titles in the list of
+Invariant Sections in the license notice of the combined work.
+</p>
+<p>In the combination, you must combine any sections Entitled &ldquo;History&rdquo;
+in the various original documents, forming one section Entitled
+&ldquo;History&rdquo;; likewise combine any sections Entitled &ldquo;Acknowledgements&rdquo;,
+and any sections Entitled &ldquo;Dedications&rdquo;.  You must delete all
+sections Entitled &ldquo;Endorsements.&rdquo;
+</p>
+</li><li>
+COLLECTIONS OF DOCUMENTS
+
+<p>You may make a collection consisting of the Document and other documents
+released under this License, and replace the individual copies of this
+License in the various documents with a single copy that is included in
+the collection, provided that you follow the rules of this License for
+verbatim copying of each of the documents in all other respects.
+</p>
+<p>You may extract a single document from such a collection, and distribute
+it individually under this License, provided you insert a copy of this
+License into the extracted document, and follow this License in all
+other respects regarding verbatim copying of that document.
+</p>
+</li><li>
+AGGREGATION WITH INDEPENDENT WORKS
+
+<p>A compilation of the Document or its derivatives with other separate
+and independent documents or works, in or on a volume of a storage or
+distribution medium, is called an &ldquo;aggregate&rdquo; if the copyright
+resulting from the compilation is not used to limit the legal rights
+of the compilation&rsquo;s users beyond what the individual works permit.
+When the Document is included in an aggregate, this License does not
+apply to the other works in the aggregate which are not themselves
+derivative works of the Document.
+</p>
+<p>If the Cover Text requirement of section 3 is applicable to these
+copies of the Document, then if the Document is less than one half of
+the entire aggregate, the Document&rsquo;s Cover Texts may be placed on
+covers that bracket the Document within the aggregate, or the
+electronic equivalent of covers if the Document is in electronic form.
+Otherwise they must appear on printed covers that bracket the whole
+aggregate.
+</p>
+</li><li>
+TRANSLATION
+
+<p>Translation is considered a kind of modification, so you may
+distribute translations of the Document under the terms of section 4.
+Replacing Invariant Sections with translations requires special
+permission from their copyright holders, but you may include
+translations of some or all Invariant Sections in addition to the
+original versions of these Invariant Sections.  You may include a
+translation of this License, and all the license notices in the
+Document, and any Warranty Disclaimers, provided that you also include
+the original English version of this License and the original versions
+of those notices and disclaimers.  In case of a disagreement between
+the translation and the original version of this License or a notice
+or disclaimer, the original version will prevail.
+</p>
+<p>If a section in the Document is Entitled &ldquo;Acknowledgements&rdquo;,
+&ldquo;Dedications&rdquo;, or &ldquo;History&rdquo;, the requirement (section 4) to Preserve
+its Title (section 1) will typically require changing the actual
+title.
+</p>
+</li><li>
+TERMINATION
+
+<p>You may not copy, modify, sublicense, or distribute the Document
+except as expressly provided under this License.  Any attempt
+otherwise to copy, modify, sublicense, or distribute it is void, and
+will automatically terminate your rights under this License.
+</p>
+<p>However, if you cease all violation of this License, then your license
+from a particular copyright holder is reinstated (a) provisionally,
+unless and until the copyright holder explicitly and finally
+terminates your license, and (b) permanently, if the copyright holder
+fails to notify you of the violation by some reasonable means prior to
+60 days after the cessation.
+</p>
+<p>Moreover, your license from a particular copyright holder is
+reinstated permanently if the copyright holder notifies you of the
+violation by some reasonable means, this is the first time you have
+received notice of violation of this License (for any work) from that
+copyright holder, and you cure the violation prior to 30 days after
+your receipt of the notice.
+</p>
+<p>Termination of your rights under this section does not terminate the
+licenses of parties who have received copies or rights from you under
+this License.  If your rights have been terminated and not permanently
+reinstated, receipt of a copy of some or all of the same material does
+not give you any rights to use it.
+</p>
+</li><li>
+FUTURE REVISIONS OF THIS LICENSE
+
+<p>The Free Software Foundation may publish new, revised versions
+of the GNU Free Documentation License from time to time.  Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.  See
+<a href="http://www.gnu.org/copyleft/">http://www.gnu.org/copyleft/</a>.
+</p>
+<p>Each version of the License is given a distinguishing version number.
+If the Document specifies that a particular numbered version of this
+License &ldquo;or any later version&rdquo; applies to it, you have the option of
+following the terms and conditions either of that specified version or
+of any later version that has been published (not as a draft) by the
+Free Software Foundation.  If the Document does not specify a version
+number of this License, you may choose any version ever published (not
+as a draft) by the Free Software Foundation.  If the Document
+specifies that a proxy can decide which future versions of this
+License can be used, that proxy&rsquo;s public statement of acceptance of a
+version permanently authorizes you to choose that version for the
+Document.
+</p>
+</li><li>
+RELICENSING
+
+<p>&ldquo;Massive Multiauthor Collaboration Site&rdquo; (or &ldquo;MMC Site&rdquo;) means any
+World Wide Web server that publishes copyrightable works and also
+provides prominent facilities for anybody to edit those works.  A
+public wiki that anybody can edit is an example of such a server.  A
+&ldquo;Massive Multiauthor Collaboration&rdquo; (or &ldquo;MMC&rdquo;) contained in the
+site means any set of copyrightable works thus published on the MMC
+site.
+</p>
+<p>&ldquo;CC-BY-SA&rdquo; means the Creative Commons Attribution-Share Alike 3.0
+license published by Creative Commons Corporation, a not-for-profit
+corporation with a principal place of business in San Francisco,
+California, as well as future copyleft versions of that license
+published by that same organization.
+</p>
+<p>&ldquo;Incorporate&rdquo; means to publish or republish a Document, in whole or
+in part, as part of another Document.
+</p>
+<p>An MMC is &ldquo;eligible for relicensing&rdquo; if it is licensed under this
+License, and if all works that were first published under this License
+somewhere other than this MMC, and subsequently incorporated in whole
+or in part into the MMC, (1) had no cover texts or invariant sections,
+and (2) were thus incorporated prior to November 1, 2008.
+</p>
+<p>The operator of an MMC Site may republish an MMC contained in the site
+under CC-BY-SA on the same site at any time before August 1, 2009,
+provided the MMC is eligible for relicensing.
+</p>
+</li></ol>
+
+
+<a name="ADDENDUM_003a-How-to-use-this-License-for-your-documents"></a>
+<h2 class="heading">ADDENDUM: How to use this License for your documents</h2>
+
+<p>To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and
+license notices just after the title page:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">  Copyright (C)  <var>year</var>  <var>your name</var>.
+  Permission is granted to copy, distribute and/or modify this document
+  under the terms of the GNU Free Documentation License, Version 1.3
+  or any later version published by the Free Software Foundation;
+  with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+  Texts.  A copy of the license is included in the section entitled ``GNU
+  Free Documentation License''.
+</pre></td></tr></table>
+
+<p>If you have Invariant Sections, Front-Cover Texts and Back-Cover Texts,
+replace the &ldquo;with&hellip;Texts.&rdquo; line with this:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="smallexample">    with the Invariant Sections being <var>list their titles</var>, with
+    the Front-Cover Texts being <var>list</var>, and with the Back-Cover Texts
+    being <var>list</var>.
+</pre></td></tr></table>
+
+<p>If you have Invariant Sections without Cover Texts, or some other
+combination of the three, merge those two alternatives to suit the
+situation.
+</p>
+<p>If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of
+free software license, such as the GNU General Public License,
+to permit their use in free software.
+</p>
+
+
+<hr size="6">
+<a name="Concept-index"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[ &gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#GNU-Free-Documentation-License" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Top" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[ &gt;&gt; ]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1 class="unnumbered">Concept index</h1>
+
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-index_cp_letter-A" class="summary-letter"><b>A</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-B" class="summary-letter"><b>B</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-D" class="summary-letter"><b>D</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-G" class="summary-letter"><b>G</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-K" class="summary-letter"><b>K</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-O" class="summary-letter"><b>O</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-R" class="summary-letter"><b>R</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-S" class="summary-letter"><b>S</b></a>
+ &nbsp; 
+</td></tr></table>
+<table border="0" class="index-cp">
+<tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-A">A</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-authors">authors</a></td><td valign="top"><a href="#RhythmOS-Features">1.0.1 RhythmOS Features</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-B">B</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-bug-reporting">bug reporting</a></td><td valign="top"><a href="#Reporting-bugs">11. Reporting bugs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Build-Internals">Build Internals</a></td><td valign="top"><a href="#Build-Internals">2.0.1 Build Internals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Building-RhythmOS">Building RhythmOS</a></td><td valign="top"><a href="#Building-RhythmOS">2. Building RhythmOS</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-C">C</a></td><td valign="top"><a href="#C">4.2 C</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-compiler">compiler</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-D">D</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Dustin_002c-Dorroh">Dustin, Dorroh</a></td><td valign="top"><a href="#RhythmOS-Features">1.0.1 RhythmOS Features</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-G">G</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Generate-Bootloader-Image">Generate Bootloader Image</a></td><td valign="top"><a href="#Generate-Bootloader-Image">Generate Bootloader Image</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Generate-Filesystem-Image">Generate Filesystem Image</a></td><td valign="top"><a href="#Generate-Filesystem-Image">Generate Filesystem Image</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Generate-Kernel-Image">Generate Kernel Image</a></td><td valign="top"><a href="#Generate-Kernel-Image">Generate Kernel Image</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-K">K</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-kernel">kernel</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-O">O</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-open-source">open source</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-OS">OS</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Overview">Overview</a></td><td valign="top"><a href="#Overview">1. Overview</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-P">P</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-portable">portable</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-problems">problems</a></td><td valign="top"><a href="#Reporting-bugs">11. Reporting bugs</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-R">R</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-reporting-bugs">reporting bugs</a></td><td valign="top"><a href="#Reporting-bugs">11. Reporting bugs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-RhythmOS-Features">RhythmOS Features</a></td><td valign="top"><a href="#RhythmOS-Features">1.0.1 RhythmOS Features</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-RTL">RTL</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Run_002dTime-Library">Run-Time Library</a></td><td valign="top"><a href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Concept-index_cp_letter-S">S</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Source-Code">Source Code</a></td><td valign="top"><a href="#Source-Code">1.0.2 Source Code</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Concept-index_cp_letter-A" class="summary-letter"><b>A</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-B" class="summary-letter"><b>B</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-D" class="summary-letter"><b>D</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-G" class="summary-letter"><b>G</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-K" class="summary-letter"><b>K</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-O" class="summary-letter"><b>O</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-R" class="summary-letter"><b>R</b></a>
+ &nbsp; 
+<a href="#Concept-index_cp_letter-S" class="summary-letter"><b>S</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr size="6">
+<a name="SEC_Foot"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Footnotes</h1>
+<h3><a name="FOOT1" href="#DOCF1">(1)</a></h3>
+<p>For example binaries will
+placed in &lsquo;<tt>rootfs/bin</tt>&rsquo; directory on the host machine
+</p><h3><a name="FOOT2" href="#DOCF2">(2)</a></h3>
+<p> <em>See</em> &lsquo;<tt>fstool.c</tt>&rsquo; in the project source to
+see how the image is created
+</p><h3><a name="FOOT3" href="#DOCF3">(3)</a></h3>
+<p>International Standardization Organization
+</p><h3><a name="FOOT4" href="#DOCF4">(4)</a></h3>
+<p>The wording here was
+careless.  The intention was that nobody would have to pay for
+<em>permission</em> to use the GNU system.  But the words don&rsquo;t make this
+clear, and people often interpret them as saying that copies of GNU
+should always be distributed at little or no charge.  That was never the
+intent; later on, the manifesto mentions the possibility of companies
+providing the service of distribution for a profit.  Subsequently I have
+learned to distinguish carefully between &ldquo;free&rdquo; in the sense of
+freedom and &ldquo;free&rdquo; in the sense of price.  Free software is software
+that users have the freedom to distribute and change.  Some users may
+obtain copies at no charge, while others pay to obtain copies&mdash;and if
+the funds help support improving the software, so much the better.  The
+important thing is that everyone who has a copy has the freedom to
+cooperate with others in using it.
+</p><h3><a name="FOOT5" href="#DOCF5">(5)</a></h3>
+<p>This is another place I failed to
+distinguish carefully between the two different meanings of &ldquo;free.&rdquo;
+The statement as it stands is not false&mdash;you can get copies of GNU
+software at no charge, from your friends or over the net.  But it does
+suggest the wrong idea.
+</p><h3><a name="FOOT6" href="#DOCF6">(6)</a></h3>
+<p>Several such companies now exist.
+</p><h3><a name="FOOT7" href="#DOCF7">(7)</a></h3>
+<p>The Free Software
+Foundation raises most of its funds from a distribution service,
+although it is a charity rather than a company.  If <em>no one</em>
+chooses to obtain copies by ordering from the FSF, it will be unable
+to do its work.  But this does not mean that proprietary restrictions
+are justified to force every user to pay.  If a small fraction of all
+the users order copies from the FSF, that is sufficient to keep the FSF
+afloat.  So we ask users to choose to support us in this way.  Have you
+done your part?
+</p><h3><a name="FOOT8" href="#DOCF8">(8)</a></h3>
+<p>A group of
+computer companies recently pooled funds to support maintenance of the
+GNU C Compiler.
+</p><h3><a name="FOOT9" href="#DOCF9">(9)</a></h3>
+<p>In the 80s I had not yet realized how confusing it was
+to speak of &ldquo;the issue&rdquo; of &ldquo;intellectual property.&rdquo;  That term is
+obviously biased; more subtle is the fact that it lumps together
+various disparate laws which raise very different issues.  Nowadays I
+urge people to reject the term &ldquo;intellectual property&rdquo; entirely,
+lest it lead others to suppose that those laws form one coherent
+issue.  The way to be clear is to discuss patents, copyrights, and
+trademarks separately.  See
+<a href="http://www.gnu.org/philosophy/not-ipr.xhtml">http://www.gnu.org/philosophy/not-ipr.xhtml</a> for more
+explanation of how this term spreads confusion and bias.
+</p><h3><a name="FOOT10" href="#DOCF10">(10)</a></h3>
+<p>Subsequently we have discovered the need to
+distinguish between &ldquo;free software&rdquo; and &ldquo;freeware&rdquo;.  The term
+&ldquo;freeware&rdquo; means software you are free to redistribute, but usually
+you are not free to study and change the source code, so most of it is
+not free software.  See
+<a href="http://www.gnu.org/philosophy/words-to-avoid.html">http://www.gnu.org/philosophy/words-to-avoid.html</a> for more
+explanation.
+</p><hr size="1">
+<a name="SEC_Contents"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Table of Contents</h1>
+<div class="contents">
+
+<ul class="toc">
+  <li><a name="toc-Overview-1" href="#Overview">1. Overview</a>
+  <ul class="toc">
+
+    <ul class="toc">
+      <li><a name="toc-RhythmOS-Features-1" href="#RhythmOS-Features">1.0.1 RhythmOS Features</a></li>
+      <li><a name="toc-Source-Code-1" href="#Source-Code">1.0.2 Source Code</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Building-RhythmOS-1" href="#Building-RhythmOS">2. Building RhythmOS</a>
+  <ul class="toc">
+
+    <ul class="toc">
+      <li><a name="toc-Build-Internals-1" href="#Build-Internals">2.0.1 Build Internals</a>
+      <ul class="toc">
+        <li><a name="toc-Generate-Kernel-Image-1" href="#Generate-Kernel-Image">Generate Kernel Image</a></li>
+        <li><a name="toc-Generate-Filesystem-Image-1" href="#Generate-Filesystem-Image">Generate Filesystem Image</a></li>
+        <li><a name="toc-Generate-Bootloader-Image-1" href="#Generate-Bootloader-Image">Generate Bootloader Image</a></li>
+      </ul>
+</li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Running-RhythmOS-1" href="#Running-RhythmOS">3. Running RhythmOS</a></li>
+  <li><a name="toc-Programming-the-kernel-1" href="#Programming-the-kernel">4. Programming the kernel</a>
+  <ul class="toc">
+    <li><a name="toc-Assembly-1" href="#Assembly">4.1 Assembly</a>
+    <ul class="toc">
+      <li><a name="toc-link_002eld-source-file" href="#link_002eld-source-file">link.ld source file</a></li>
+    </ul></li>
+    <li><a name="toc-C-1" href="#C">4.2 C</a>
+    <ul class="toc">
+      <li><a name="toc-The-Run_002dTime-Library-1" href="#The-Run_002dTime-Library">4.2.1 The Run-Time Library</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Multitasking-1" href="#Multitasking">5. Multitasking</a></li>
+  <li><a name="toc-Memory-1" href="#Memory">6. Memory</a></li>
+  <li><a name="toc-Dynamic-Memory-Allocation-1" href="#Dynamic-Memory-Allocation">7. Dynamic Memory Allocation</a></li>
+  <li><a name="toc-System-calls-1" href="#System-calls">8. System calls</a></li>
+  <li><a name="toc-I_002fO-1" href="#I_002fO">9. I/O</a></li>
+  <li><a name="toc-Filesystems-1" href="#Filesystems">10. Filesystems</a></li>
+  <li><a name="toc-Reporting-bugs-1" href="#Reporting-bugs">11. Reporting bugs</a></li>
+  <li><a name="toc-The-GNU-Manifesto" href="#The-GNU-Manifesto">The GNU Manifesto</a>
+  <ul class="toc">
+    <li><a name="toc-What_0027s-GNU_003f-Gnu_0027s-Not-Unix_0021" href="#What_0027s-GNU_003f-Gnu_0027s-Not-Unix_0021">What&rsquo;s GNU? Gnu&rsquo;s Not Unix!</a></li>
+    <li><a name="toc-Why-I-Must-Write-GNU" href="#Why-I-Must-Write-GNU">Why I Must Write GNU</a></li>
+    <li><a name="toc-Why-GNU-Will-Be-Compatible-with-Unix" href="#Why-GNU-Will-Be-Compatible-with-Unix">Why GNU Will Be Compatible with Unix</a></li>
+    <li><a name="toc-How-GNU-Will-Be-Available" href="#How-GNU-Will-Be-Available">How GNU Will Be Available</a></li>
+    <li><a name="toc-Why-Many-Other-Programmers-Want-to-Help" href="#Why-Many-Other-Programmers-Want-to-Help">Why Many Other Programmers Want to Help</a></li>
+    <li><a name="toc-How-You-Can-Contribute" href="#How-You-Can-Contribute">How You Can Contribute</a></li>
+    <li><a name="toc-Why-All-Computer-Users-Will-Benefit" href="#Why-All-Computer-Users-Will-Benefit">Why All Computer Users Will Benefit</a></li>
+    <li><a name="toc-Some-Easily-Rebutted-Objections-to-GNU_0027s-Goals" href="#Some-Easily-Rebutted-Objections-to-GNU_0027s-Goals">Some Easily Rebutted Objections to GNU&rsquo;s Goals</a></li>
+  </ul></li>
+  <li><a name="toc-GNU-Free-Documentation-License" href="#GNU-Free-Documentation-License">A. GNU Free Documentation License</a></li>
+  <li><a name="toc-Concept-index" href="#Concept-index">Concept index</a></li>
+</ul>
+</div>
+<hr size="1">
+<a name="SEC_About"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>About This Document</h1>
+<p>
+  This document was generated by <em>Dustin Dorroh</em> on <em>September 3, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+</p>
+<p>
+  The buttons in the navigation panels have the following meaning:
+</p>
+<table border="1">
+  <tr>
+    <th> Button </th>
+    <th> Name </th>
+    <th> Go to </th>
+    <th> From 1.2.3 go to</th>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt; ] </td>
+    <td align="center">Back</td>
+    <td>Previous section in reading order</td>
+    <td>1.2.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt; ] </td>
+    <td align="center">Forward</td>
+    <td>Next section in reading order</td>
+    <td>1.2.4</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &lt;&lt; ] </td>
+    <td align="center">FastBack</td>
+    <td>Beginning of this chapter or previous chapter</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td align="center"> [ Up ] </td>
+    <td align="center">Up</td>
+    <td>Up section</td>
+    <td>1.2</td>
+  </tr>
+  <tr>
+    <td align="center"> [ &gt;&gt; ] </td>
+    <td align="center">FastForward</td>
+    <td>Next chapter</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td align="center"> [Top] </td>
+    <td align="center">Top</td>
+    <td>Cover (top) of document</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Contents] </td>
+    <td align="center">Contents</td>
+    <td>Table of contents</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [Index] </td>
+    <td align="center">Index</td>
+    <td>Index</td>
+    <td> &nbsp; </td>
+  </tr>
+  <tr>
+    <td align="center"> [ ? ] </td>
+    <td align="center">About</td>
+    <td>About (help)</td>
+    <td> &nbsp; </td>
+  </tr>
+</table>
+
+<p>
+  where the <strong> Example </strong> assumes that the current position is at <strong> Subsubsection One-Two-Three </strong> of a document of the following structure:
+</p>
+
+<ul>
+  <li> 1. Section One
+    <ul>
+      <li>1.1 Subsection One-One
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.2 Subsection One-Two
+        <ul>
+          <li>1.2.1 Subsubsection One-Two-One</li>
+          <li>1.2.2 Subsubsection One-Two-Two</li>
+          <li>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp;
+            <strong>&lt;== Current Position </strong></li>
+          <li>1.2.4 Subsubsection One-Two-Four</li>
+        </ul>
+      </li>
+      <li>1.3 Subsection One-Three
+        <ul>
+          <li>...</li>
+        </ul>
+      </li>
+      <li>1.4 Subsection One-Four</li>
+    </ul>
+  </li>
+</ul>
+
+<hr size="1">
+<p>
+ <font size="-1">
+  This document was generated by <em>Dustin Dorroh</em> on <em>September 3, 2011</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>
