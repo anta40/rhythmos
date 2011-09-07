@@ -8,7 +8,7 @@ KERNEL_IMG = kernel.img
 FILESYSTEM_IMG = filesystem.img
 GRUB_IMG = grub.img
 KERNEL_SOURCES = $(wildcard *.c)
-KERNEL_DEPS = $(KERNEL_DEPS:.c=.d)
+KERNEL_DEPS = $(KERNEL_SOURCES:.c=.d)
 KERNEL_OBJECTS = $(KERNEL_SOURCES:.c=.o)
 
 

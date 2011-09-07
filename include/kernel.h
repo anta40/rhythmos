@@ -45,25 +45,20 @@ typedef struct {
 	unsigned int eip, cs, eflags, useresp, ss;
 } __attribute__ ((packed)) regs;
 
-/*
- * main.c 
- */
+/** main.c **/
 void timer_handler(regs * r);
 void keyboard_handler(regs * r, unsigned char scancode);
 void write_to_screen(const char *data, unsigned int count);
 
-/* segmentation.c */
+/** segmentation.c **/
 void setup_segmentation(void);
 
-/*
- * interrupts.c */
+/** interrupts.c */
 void fatal(const char *str);
 void setup_interrupts(void);
 void move_cursor(int x, int y);
 
-/*
- * page.c 
- */
+/** page.c **/
 
 #define PAGE_ADDRESS_MASK     0xFFFFF000
 #define PAGE_USER             0x4
@@ -86,9 +81,7 @@ void identity_map(page_dir pdir, unsigned int start, unsigned int end,
 void map_new_pages(page_dir pdir, unsigned int base, unsigned int npages);
 void free_page_dir(page_dir pdir);
 
-/*
- * start.s 
- */
+/** start.s **/
 void set_gdt(void *gp);
 void set_tss(unsigned int tss_seg);
 void idle(void);
@@ -100,9 +93,7 @@ void disable_paging(void);
 unsigned int getcr2(void);
 int in_user_mode(void);
 
-/*
- * pipe.c 
- */
+/** pipe.c **/
 typedef struct pipe_buffer {
 	unsigned int reading;
 	unsigned int writing;
@@ -142,9 +133,7 @@ struct filehandle {
 	unsigned int entryno;	/* for directories */
 };
 
-/*
- * pipe.c 
- */
+/** pipe.c **/
 
 filehandle *new_pipe_writer(pipe_buffer * p);
 filehandle *new_pipe_reader(pipe_buffer * p);
@@ -177,9 +166,7 @@ filehandle *new_pipe_reader(pipe_buffer * p);
     (_obj)->prev = NULL;                   \
   }
 
-/**
- * process.c 
- **/
+/** process.c  **/
 typedef struct process {
 	pid_t pid;		/* process identifier/index into process array */
 	int exists;		/* whether or not this process slot is used */
@@ -229,7 +216,7 @@ int valid_string(const char *str);
 void syscall(regs * r);
 
 /** buddy.c **/
-kmalloc malloc_data
+//kmalloc malloc_data 
 void kmalloc_init(void);
 void *kmalloc(unsigned int nbytes);
 void kfree(void *ptr);

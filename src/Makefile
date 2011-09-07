@@ -1,9 +1,4 @@
-#       Makefile
-#
-#       Copyright 2011 Dustin Dorroh <dustindorroh@gmail.com>
-#
-
-VPATH=../includes: ..lib
+include Makefile.inc
 
 # Host defs
 CC = gcc
@@ -14,72 +9,61 @@ AS = as
 # Target defs
 ARCH = $(shell arch)
 ifeq ($(ARCH),x86_64)
+HOST_CFLAGS =
 TARGET_CC = i386-elf-gcc
 TARGET_CPP = i386-elf-cpp
 TARGET_LD = i386-elf-ld
 TARGET_AS = i386-elf-as
-HOST_CFLAGS = -Wall
 else
+HOST_CFLAGS = -m32
 TARGET_CC = gcc
 TARGET_CPP = cpp
 TARGET_LD = ld
 TARGET_AS = as
-HOST_CFLAGS = -Wall -m32
 endif
+
 
 INCLUDE = -I../include
-include Makefile.inc
+CFLAGS = -m32 -fno-stack-protector -Wall -nostdinc -fno-builtin
 
-TARGET_CFLAGS = \
--Wall \
--Wextra \
--m32 \
--fno-stack-protector \
--nostdinc \
--fno-builtin
+%.o: %.c
+	$(TARGET_CC) $(INCLUDE) $(CFLAGS) -c -MM -MP -MF $(@:%.o=%.d) -MT $(@:%.o=%.d) -o $@ $<
 
-%.d: %.c
-	@set -e; rm -f $@; \
-	$(CC) $(INCLUDE) -MM $(CPPFLAGS) $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
-
-# If target isn't 'clean' include C_DEPS
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(strip $(C_DEPS)),)
--include $(C_DEPS)
+ifneq ($(strip $(DEPS)),)
+-include $(DEPS)
 endif
 endif
 
-VPATH=../scripts:.
 
-all: default
-objects: $(COREUTILS_OBJECTS)
-
-default: $(COREUTILS_OBJECTS) $(COREUTILS)
-
-%.o: %.c $(C_OBJS)
-	$(TARGET_CC) $(INCLUDE) $(TARGET_CFLAGS) -c $< 
-
-%.o: %.s
-	$(TARGET_CPP) $< | $(TARGET_AS) -o $*.o
+# All Target
+all: $(OBJECTS)
 
 
-# Link using `link-user.ld'
-$(C_PROGS): %: %.o $(USER_OBJECTS)
-	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+#%.o: %.s
+	#$(TARGET_CPP) $< | $(TARGET_AS) -o $*.o
 
-$(USER_OBJECTS): %: %.o $(USER_OBJECTS)
-	$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o	
+#$(PROGS): %: %.o 
+	#$(TARGET_LD) -T ../scripts/link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
-$(TESTS): %: %.o $(USER_OBJECTS)
-        $(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+
+## Link using `link-user.ld'
+#$(C_PROGS): %: %.o $(USER_OBJECTS)
+	#$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+
+#$(USER_OBJECTS): %: %.o $(USER_OBJECTS)
+	#$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
+
+#$(TESTS): %: %.o $(USER_OBJECTS)
+	#$(TARGET_LD) -T link-user.ld -o $@ $(USER_OBJECTS) $@.o
 
 
 
-.PHONY: clean clean-all
+
 clean:
-	-rm --force $(C_PROGS) $(C_OBJS) 
+	-rm $(OBJECTS)
 
-clean-all:
-	-rm --force $(C_PROGS) $(C_OBJS) $(C_DEPS)
+clean-deps:
+	-rm $(DEPS)
+
+.PHONY: all clean clean-deps
