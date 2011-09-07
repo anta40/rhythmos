@@ -21,7 +21,7 @@
 #ifndef LIST_H
 #define LIST_H
 
-#inclure "kernel.h"
+#include "kernel.h"
 
 /* 
  * Define a structure for linked list elements. 
