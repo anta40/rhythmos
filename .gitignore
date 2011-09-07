@@ -3,6 +3,5 @@
 config.log
 config.status
 rootfs
-Makefile
 .cproject
 .project
