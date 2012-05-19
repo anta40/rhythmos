@@ -44,43 +44,12 @@
 #define SCREEN_WIDTH         80
 #define SCREEN_HEIGHT        25
 #define VIDEO_MEMORY         0xB8000
-#define ISR_FREQ	     0x1234DC /* 1.19318 MHz */
+#define ISR_FREQ	     	 0x1234DC	/* 1.19318 MHz */
 #define TICKS_PER_SECOND     50
 #define RING_0               0
 #define RING_1               1
 #define RING_2               2
 #define RING_3               3
-
-/*
- * Special keys 
- */
-#define KEY_SHIFT            42
-#define KEY_CTRL             29
-#define KEY_ALT              56
-#define KEY_ENTER            28
-#define KEY_BACKSPACE        14
-#define KEY_TAB              15
-
-#define KEY_UP               72
-#define KEY_DOWN             80
-#define KEY_LEFT             75
-#define KEY_RIGHT            77
-#define KEY_CAPS             58
-#define KEY_PGUP             73
-#define KEY_PGDOWN           81
-
-#define KEY_F1               59
-#define KEY_F2               60
-#define KEY_F3               61
-#define KEY_F4               62
-#define KEY_F5               63
-#define KEY_F6               64
-#define KEY_F7               65
-#define KEY_F8               66
-#define KEY_F9               67
-#define KEY_F10              68
-#define KEY_F11              87
-#define KEY_F12              88
 
 /*
  * Interrupts 
@@ -114,7 +83,7 @@
 #define SYSCALL_GETCWD       19
 #define SYSCALL_KILL         20
 #define SYSCALL_HALT         21
-
+#define SYSCALL_VFORK		 22
 
 /*
  * errno values 
@@ -135,6 +104,8 @@
 #define ERRNO_MAX            14
 #define ESUSPEND             1000
 
+#define EXIT_SUCCESS		 0
+#define EXIT_FAILURE		 1
 
 /* 
  * Macros 

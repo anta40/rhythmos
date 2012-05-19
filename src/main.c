@@ -9,8 +9,6 @@
 #include <keyboard.h>
 
 screenchar *screen = (screenchar *) VIDEO_MEMORY;
-extern char kbdmap[128];
-extern char kbdmap_shift[128];
 
 unsigned int xpos = 0;
 unsigned int ypos = 0;
@@ -21,13 +19,12 @@ unsigned int timer_ticks = 0;
 char *filesystem;
 pipe_buffer *input_pipe = NULL;
 extern process processes[MAX_PROCESSES];
-
 /*
  * scroll
  * 
  * Move lines 1-24 up by one line, and clear the last line.
  */
-static void scroll()
+static void scroll()		// @TODO: Move to video.c
 {
 	unsigned int y;
 	unsigned int x;
@@ -56,7 +53,7 @@ static void scroll()
  * video memory. The position of the cursor is updated accordingly. The
  * screen is scrolled if the text goes beyond the end of the last line.
  */
-void write_to_screen(const char *data, unsigned int count)
+void write_to_screen(const char *data, unsigned int count)	// @TODO: Move to video.c
 {
 	unsigned int i;
 	for (i = 0; i < count; i++) {
@@ -71,12 +68,12 @@ void write_to_screen(const char *data, unsigned int count)
 			int add = 8 - (xpos % 8);
 			xpos += add;
 		} else if (c == BACKSPACE && xpos) {
-		/* Handle a backspace, by moving the cursor back one space
-		 * untill the cursor is against the edge */
-			
-			xpos--;  /* Back the cursor up then display if */			
-			screen[ypos * SCREEN_WIDTH + xpos].c = (int) NULL;
-			
+			/* Handle a backspace, by moving the cursor back one space
+			 * untill the cursor is against the edge */
+
+			xpos--;	/* Back the cursor up then display if */
+			screen[ypos * SCREEN_WIDTH + xpos].c = (int)NULL;
+
 		} else {
 			/* normal character */
 			screen[ypos * SCREEN_WIDTH + xpos].c = c;
@@ -90,7 +87,7 @@ void write_to_screen(const char *data, unsigned int count)
 			scroll();
 		}
 	}
-		
+
 	move_cursor(xpos, ypos);
 }
 
@@ -105,45 +102,6 @@ void write_to_screen(const char *data, unsigned int count)
 void timer_handler(regs * r)
 {
 	timer_ticks++;
-
-	context_switch(r);
-}
-
-/*
- * keyboard_handler
- * 
- * This function is called every time a key is pressed or released. The
- * lowest 7 bits of the scancode indicate which key it was, and the
- * highest bit indicates whether the event was a key press or key
- * release.
- * 
- * The key values correspond to the entries in the kbdmap and
- * kbdmap_shift arrays, or for special keys (e.g. arrow keys) the KEY_*
- * macros defined in constants.h
- */
-void keyboard_handler(regs * r, unsigned char scancode)
-{
-	unsigned char key = scancode & 0x7F;
-
-	if (scancode & 0x80) {
-		/*
-		 * key release 
-		 */
-		if (KEY_SHIFT == key)
-			shift_pressed = 0;
-	} else {
-		/*
-		 * key press 
-		 */
-		if (KEY_SHIFT == key) {
-			shift_pressed = 1;
-		} else {
-			char c =
-			    shift_pressed ? kbdmap_shift[key] : kbdmap[key];
-			if (input_pipe)
-				write_to_pipe(input_pipe, &c, 1);
-		}
-	}
 
 	context_switch(r);
 }
@@ -262,13 +220,13 @@ void launch_shell()
 }
 
 /*
- * kernel_main
+ * kmain
  * 
  * This is the first thing that executes when the kernel starts. Any
  * initialisation e.g. interrupt handlers must be done at the start of
  * the function. This function should never return.
  */
-void kernel_main(multiboot * mb)
+void kmain(multiboot * mb)
 {
 	setup_segmentation();
 	setup_interrupts();
@@ -288,7 +246,7 @@ void kernel_main(multiboot * mb)
 	 */
 	move_cursor(xpos, ypos);
 
-	kprintf("%s\n%s\n%s\n\n\n\n",VERSION,COPYRIGHT,DISCLAIMER);
+	kprintf("%s\n%s\n%s\n\n\n\n", VERSION, COPYRIGHT, DISCLAIMER);
 
 	assert(1 == mb->mods_count);
 	assert(mb->mods_addr[0].mod_end < 2 * MB);
